@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: gci-mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: good_car_imports
+      MYSQL_USER: gci_user
+      MYSQL_PASSWORD: gci_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      # Map the legacy DB backup to initialize if needed:
+      # - ../good-car-imports/database_backup.sql:/docker-entrypoint-initdb.d/legacy_dump.sql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=100
+
+  redis:
+    image: redis:7-alpine
+    container_name: gci-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    # Memory constrained to 256MB as specified in the Phase 1 memory budget
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru --save 60 1 --loglevel warning
+
+volumes:
+  mariadb_data:
+  redis_data:

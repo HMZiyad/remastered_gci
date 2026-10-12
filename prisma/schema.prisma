@@ -1,0 +1,339 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// USERS & AUTH
+// ==========================================
+model User {
+  id              Int       @id @default(autoincrement()) @db.UnsignedInt
+  name            String    @db.VarChar(100)
+  email           String    @unique @db.VarChar(255)
+  password_hash   String    @db.VarChar(255)
+  role            Role      @default(staff)
+  title           String?   @db.VarChar(100)
+  avatar_initials String?   @db.VarChar(5)
+  is_active       Boolean   @default(true)
+  last_login_at   DateTime? @db.DateTime(0)
+  created_at      DateTime  @default(now()) @db.DateTime(0)
+  updated_at      DateTime  @default(now()) @updatedAt @db.DateTime(0)
+
+  @@map("users")
+}
+
+enum Role {
+  admin
+  manager
+  staff
+}
+
+// ==========================================
+// CORE INVENTORY
+// ==========================================
+model Vehicle {
+  id                  Int       @id @default(autoincrement()) @db.UnsignedInt
+  stock_id            String?   @db.VarChar(50)
+  car_name            String    @db.VarChar(255)
+  package_trim        String?   @db.VarChar(100)
+  year_of_manufacture Int?      @db.SmallInt
+  reiwa_year          String?   @db.VarChar(20)
+  
+  color_name          String?   @db.VarChar(50)
+  color_code          String?   @db.VarChar(20)
+  color_hex           String?   @db.VarChar(10)
+  
+  auction_grade       String?   @db.VarChar(10)
+  interior_grade      String?   @db.VarChar(10)
+  mileage_km          Int?      @db.UnsignedInt
+  chassis_code        String    @unique @db.VarChar(100)
+  
+  transmission        String?   @db.VarChar(50)
+  engine_spec         String?   @db.VarChar(100)
+  engine_cc           Int?      @db.UnsignedInt
+  fuel_type           FuelType?
+  seats               Int?      @db.TinyInt
+  drive_train         String?   @db.VarChar(20)
+  body_type           BodyType?
+  brand               String?   @db.VarChar(50)
+  
+  status              VehicleStatus @default(available)
+  price_bdt           BigInt?   @db.UnsignedBigInt // stored in paisa
+  landed_cost         BigInt?   @db.UnsignedBigInt // stored in paisa
+  
+  cover_photo         String?   @db.VarChar(500)
+  description         String?   @db.Text
+  
+  safety_features     Json?
+  interior_features   Json?
+  exterior_features   Json?
+  
+  is_featured         Boolean   @default(false)
+  is_new_arrival      Boolean   @default(false)
+  badge_text          String?   @db.VarChar(50)
+  showroom_location   String?   @db.VarChar(100)
+  
+  slug                String?   @unique @db.VarChar(200)
+  views_count         Int       @default(0) @db.UnsignedInt
+  
+  created_at          DateTime  @default(now()) @db.DateTime(0)
+  updated_at          DateTime  @default(now()) @updatedAt @db.DateTime(0)
+
+  photos              VehiclePhoto[]
+  sales               Sale[]
+  inquiries           Inquiry[]
+  stock_inwards       StockInward[]
+
+  @@map("vehicles")
+}
+
+enum FuelType {
+  Petrol
+  Diesel
+  Hybrid
+  PHEV
+  Electric
+  Octane
+}
+
+enum BodyType {
+  SUV
+  Sedan
+  Hatchback
+  MPV
+  Crossover
+  Wagon
+  Coupe
+  Pickup
+  Microbus
+  HIACE_Van @map("HIACE-Van")
+}
+
+enum VehicleStatus {
+  available
+  port_clearance
+  vessel_transit
+  pre_booked
+  sold
+  reserved
+}
+
+// ==========================================
+// MEDIA & IMAGES
+// ==========================================
+model VehiclePhoto {
+  id              Int       @id @default(autoincrement()) @db.UnsignedInt
+  vehicle_id      Int       @db.UnsignedInt
+  file_path       String    @db.VarChar(500) // Original uploaded file path
+  label           String?   @db.VarChar(100)
+  file_size_bytes Int?      @db.UnsignedInt
+  is_cover        Boolean   @default(false)
+  sort_order      Int       @default(0) @db.TinyInt
+  blurhash        String?   @db.VarChar(100) // NEW: LQIP for fast loading
+  created_at      DateTime  @default(now()) @db.DateTime(0)
+
+  vehicle         Vehicle   @relation(fields: [vehicle_id], references: [id], onDelete: Cascade)
+  variants        ImageVariant[]
+
+  @@index([vehicle_id])
+  @@map("vehicle_photos")
+}
+
+// NEW: Stores generated AVIF, WebP, and JPEG sizes for srcset
+model ImageVariant {
+  id              Int       @id @default(autoincrement()) @db.UnsignedInt
+  photo_id        Int       @db.UnsignedInt
+  format          String    @db.VarChar(10) // avif, webp, jpeg
+  width           Int       @db.UnsignedSmallInt
+  height          Int       @db.UnsignedSmallInt
+  file_path       String    @db.VarChar(500)
+  file_size_bytes Int       @db.UnsignedInt
+  created_at      DateTime  @default(now()) @db.DateTime(0)
+
+  photo           VehiclePhoto @relation(fields: [photo_id], references: [id], onDelete: Cascade)
+
+  @@index([photo_id])
+  @@unique([photo_id, format, width])
+  @@map("image_variants")
+}
+
+// ==========================================
+// PIPELINE & SALES
+// ==========================================
+model StockInward {
+  id                  Int       @id @default(autoincrement()) @db.UnsignedInt
+  vehicle_id          Int?      @db.UnsignedInt
+  
+  car_name            String    @db.VarChar(255)
+  package_trim        String?   @db.VarChar(100)
+  year_of_manufacture Int?      @db.SmallInt
+  color_name          String?   @db.VarChar(50)
+  auction_grade       String?   @db.VarChar(10)
+  interior_grade      String?   @db.VarChar(10)
+  mileage_km          Int?      @db.UnsignedInt
+  chassis_code        String    @db.VarChar(100)
+  transmission        String?   @db.VarChar(50)
+  
+  current_stage       InwardStage @default(auction_won)
+  
+  auction_house       String?   @db.VarChar(100)
+  auction_lot         String?   @db.VarChar(50)
+  won_price_jpy       BigInt?   @db.UnsignedBigInt
+  bdt_equivalent      BigInt?   @db.UnsignedBigInt
+  
+  vessel_name         String?   @db.VarChar(150)
+  eta_date            DateTime? @db.Date
+  
+  duty_amount         BigInt?   @db.UnsignedBigInt
+  duty_status         String?   @db.VarChar(50)
+  bill_of_lading      String?   @db.VarChar(100)
+  
+  jaai_cert           Boolean   @default(false)
+  jumvea_cert         Boolean   @default(false)
+  radiation_clear     Boolean   @default(false)
+  
+  customs_status      String?   @db.VarChar(50)
+  carrier_number      String?   @db.VarChar(100)
+  
+  created_at          DateTime  @default(now()) @db.DateTime(0)
+  updated_at          DateTime  @default(now()) @updatedAt @db.DateTime(0)
+
+  vehicle             Vehicle?  @relation(fields: [vehicle_id], references: [id], onDelete: SetNull)
+
+  @@index([vehicle_id])
+  @@index([current_stage])
+  @@map("stock_inward")
+}
+
+enum InwardStage {
+  auction_won
+  japan_yard
+  sea_transit
+  ctg_customs
+  dhaka_handover
+}
+
+model Sale {
+  id              Int       @id @default(autoincrement()) @db.UnsignedInt
+  vehicle_id      Int?      @db.UnsignedInt
+  car_name        String    @db.VarChar(255)
+  chassis_code    String?   @db.VarChar(100)
+  sale_price_bdt  BigInt?   @db.UnsignedBigInt // paisa
+  client_area     String?   @db.VarChar(100)
+  payment_status  PaymentStatus @default(pending)
+  delivery_status DeliveryStatus @default(pending)
+  sale_date       DateTime? @db.Date
+  created_at      DateTime  @default(now()) @db.DateTime(0)
+  updated_at      DateTime  @default(now()) @updatedAt @db.DateTime(0)
+
+  vehicle         Vehicle?  @relation(fields: [vehicle_id], references: [id], onDelete: SetNull)
+
+  @@index([vehicle_id])
+  @@map("sales")
+}
+
+enum PaymentStatus {
+  pending
+  partial
+  cleared
+  lc_settlement
+}
+
+enum DeliveryStatus {
+  pending
+  brta_pending
+  delivered
+}
+
+// ==========================================
+// LEADS & INQUIRIES
+// ==========================================
+model Inquiry {
+  id            Int       @id @default(autoincrement()) @db.UnsignedInt
+  type          InquiryType @default(contact)
+  vehicle_id    Int?      @db.UnsignedInt
+  
+  full_name     String    @db.VarChar(150)
+  phone         String?   @db.VarChar(30)
+  email         String?   @db.VarChar(255)
+  interested_in String?   @db.VarChar(100)
+  message       String?   @db.Text
+  
+  status        InquiryStatus @default(new)
+  admin_notes   String?   @db.Text
+  
+  created_at    DateTime  @default(now()) @db.DateTime(0)
+  updated_at    DateTime  @default(now()) @updatedAt @db.DateTime(0)
+
+  vehicle       Vehicle?  @relation(fields: [vehicle_id], references: [id], onDelete: SetNull)
+
+  @@index([vehicle_id])
+  @@index([status])
+  @@index([type])
+  @@map("inquiries")
+}
+
+enum InquiryType {
+  contact
+  booking
+  general
+}
+
+enum InquiryStatus {
+  new
+  contacted
+  converted
+  closed
+}
+
+model PreOrder {
+  id                Int       @id @default(autoincrement()) @db.UnsignedInt
+  region_of_origin  String?   @db.VarChar(100)
+  body_style        String?   @db.VarChar(50)
+  make_model        String?   @db.VarChar(150)
+  year_from         Int?      @db.UnsignedSmallInt
+  year_to           Int?      @db.UnsignedSmallInt
+  budget_min_bdt    BigInt?   @db.UnsignedBigInt // paisa
+  budget_max_bdt    BigInt?   @db.UnsignedBigInt // paisa
+  timeline          String?   @db.VarChar(100)
+  color_preference  String?   @db.VarChar(100)
+  additional_notes  String?   @db.Text
+  
+  full_name         String    @db.VarChar(150)
+  phone             String    @db.VarChar(30)
+  email             String?   @db.VarChar(255)
+  whatsapp          String?   @db.VarChar(30)
+  
+  status            PreOrderStatus @default(new)
+  admin_notes       String?   @db.Text
+  
+  created_at        DateTime  @default(now()) @db.DateTime(0)
+  updated_at        DateTime  @default(now()) @updatedAt @db.DateTime(0)
+
+  @@map("pre_orders")
+}
+
+enum PreOrderStatus {
+  new
+  sourcing
+  quoted
+  confirmed
+  closed
+}
+
+// ==========================================
+// SYSTEM SETTINGS
+// ==========================================
+model Setting {
+  setting_key   String    @id @db.VarChar(100)
+  setting_value String?   @db.Text
+  setting_type  String    @default("string") @db.VarChar(50) // string, number, json
+  description   String?   @db.VarChar(255)
+  updated_at    DateTime  @default(now()) @updatedAt @db.DateTime(0)
+
+  @@map("settings")
+}
