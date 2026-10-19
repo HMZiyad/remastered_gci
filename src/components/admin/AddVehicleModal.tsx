@@ -182,6 +182,30 @@ export function AddVehicleModal() {
         formData.append("photos[]", file);
       }
 
+      // 1. Primary: Direct API endpoint (immune to stale Server Action deployment hashes)
+      const url = editId ? `/api/admin/vehicles?id=${editId}` : "/api/admin/vehicles";
+      const res = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data?.success) {
+        setFeedback({ type: "success", message: editId ? "Vehicle updated successfully." : "Vehicle successfully added to inventory." });
+        setTimeout(() => {
+          router.refresh();
+          closeModal();
+        }, 1000);
+        return;
+      }
+
+      if (data?.error) {
+        setFeedback({ type: "error", message: data.error });
+        return;
+      }
+
+      // 2. Secondary fallback: Server Action
       const result = await saveVehicle(editId ? Number(editId) : null, formData);
       
       if (result.success) {
