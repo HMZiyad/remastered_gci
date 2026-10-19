@@ -55,7 +55,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error("API login error:", error);
     return NextResponse.json(
-      { error: "Authentication failed. Please try again." },
+      { error: "Authentication failed: " + (error?.message || "Internal server error") },
       { status: 500 }
     );
   }

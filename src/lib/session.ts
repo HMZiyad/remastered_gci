@@ -14,12 +14,16 @@ export const defaultSession: SessionData = {
 };
 
 export const sessionOptions = {
-  // Use the secret from env if available, otherwise use a fallback (in dev)
-  password: process.env.SECRET_COOKIE_PASSWORD || "complex_password_at_least_32_characters_long",
+  // Use SECRET_COOKIE_PASSWORD, JWT_SECRET, or default fallback
+  password: process.env.SECRET_COOKIE_PASSWORD || process.env.JWT_SECRET || "complex_password_at_least_32_characters_long",
   cookieName: "gci_admin_session",
   cookieOptions: {
-    // secure: true should be used in production (HTTPS) but can be false in local development
-    secure: process.env.NODE_ENV === "production",
+    // Only enforce secure: true if COOKIE_SECURE is explicitly true or NEXT_PUBLIC_SITE_URL is https
+    // This allows login to work on direct server IPs or HTTP domains without dropping cookies
+    secure: process.env.COOKIE_SECURE === "true" || (process.env.NEXT_PUBLIC_SITE_URL ? process.env.NEXT_PUBLIC_SITE_URL.startsWith("https://") : false),
+    sameSite: "lax" as const,
+    httpOnly: true,
+    path: "/",
   },
 };
 

@@ -48,7 +48,7 @@ export function LoginForm() {
       }
 
       // If API returned a non-ok status without clear error message
-      throw new Error("API login failed, attempting fallback...");
+      throw new Error(data?.error || `API returned status ${res.status}`);
     } catch (apiErr) {
       console.warn("API route failed, trying Server Action fallback...", apiErr);
       // 2. Secondary fallback: Server Action
@@ -60,8 +60,14 @@ export function LoginForm() {
         if (result?.error) {
           setError(result.error);
           setIsPending(false);
+          return;
         }
+        window.location.href = "/admin";
       } catch (saErr: any) {
+        if (saErr?.digest?.startsWith("NEXT_REDIRECT") || saErr?.message?.includes("NEXT_REDIRECT")) {
+          window.location.href = "/admin";
+          return;
+        }
         console.error("Login failed:", saErr);
         setError("Unable to authenticate. Please check your credentials and network connection.");
         setIsPending(false);
