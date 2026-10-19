@@ -4,7 +4,7 @@ import { formatBDT } from "@/lib/utils";
 import { connection } from "next/server";
 import { InventoryTable, SerializedVehicle } from "@/components/admin/InventoryTable";
 
-export const instant = false;
+export const dynamic = "force-dynamic";
 
 export default async function AdminVehiclesPage({
   searchParams,

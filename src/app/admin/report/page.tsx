@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { formatBDT } from "@/lib/utils";
 import { connection } from "next/server";
 
-export const instant = false;
+export const dynamic = "force-dynamic";
 
 export default async function AdminReportPage() {
   const session = await getSession();

@@ -3,7 +3,7 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { CarScrollHero } from "@/components/CarScrollHero";
 
-export const instant = false;
+export const dynamic = "force-dynamic";
 
 import { formatBDT } from "@/lib/utils";
 

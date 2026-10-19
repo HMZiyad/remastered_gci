@@ -9,7 +9,7 @@ import { AddStockInwardModal } from "@/components/admin/AddStockInwardModal";
 import { Suspense } from "react";
 import "../admin.css";
 
-export const instant = false;
+export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({
   children,

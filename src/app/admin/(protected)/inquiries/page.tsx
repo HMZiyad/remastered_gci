@@ -5,7 +5,7 @@ import { formatBDT } from "@/lib/utils";
 import { InquiryActions } from "@/components/admin/InquiryActions";
 import { PreOrderActions } from "@/components/admin/PreOrderActions";
 
-export const instant = false;
+export const dynamic = "force-dynamic";
 
 export default async function AdminInquiriesPage({
   searchParams,

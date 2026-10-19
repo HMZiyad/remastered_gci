@@ -2,7 +2,7 @@ import { connection } from "next/server";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 
-export const instant = false;
+export const dynamic = "force-dynamic";
 import { formatBDT } from "@/lib/utils";
 
 function formatMileage(km: number | null | undefined) {

@@ -1,5 +1,5 @@
 import { PrismaClient, Role, VehicleStatus, BodyType, FuelType } from '@prisma/client';
-import * as crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -16,13 +16,13 @@ async function main() {
   await prisma.user.deleteMany();
 
   console.log('Seeding Admin User...');
-  // The old hash is: $2y$12$LJ3m2xD1TfP6K5rQz5w8YeQ1bLN7v5dMxJg9h5KjZcN0pVz3KwXGm (bcrypt)
-  // We'll insert it as is; the login flow will need to rehash it to argon2id later as decided.
+  const initialPassword = process.env.ADMIN_INITIAL_PASSWORD || 'password123';
+  const passwordHash = bcrypt.hashSync(initialPassword, 10);
   await prisma.user.create({
     data: {
       name: 'M. Rahman',
       email: 'admin@goodcarimports.com',
-      password_hash: '$2y$12$LJ3m2xD1TfP6K5rQz5w8YeQ1bLN7v5dMxJg9h5KjZcN0pVz3KwXGm',
+      password_hash: passwordHash,
       role: Role.admin,
       title: 'Managing Director',
       avatar_initials: 'MR',

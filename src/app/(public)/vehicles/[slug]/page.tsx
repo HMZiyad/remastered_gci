@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 import { InteractiveGallery } from "@/components/InteractiveGallery";
 import { VehicleBookingForm } from "@/components/VehicleBookingForm";
 
-export const instant = false;
+export const dynamic = "force-dynamic";
 
 function formatBDT(paisa: number | bigint | null | undefined) {
   if (paisa == null) return "";

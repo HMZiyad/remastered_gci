@@ -1,22 +1,24 @@
-version: '3.8'
-
 services:
   mariadb:
     image: mariadb:10.11
     container_name: gci-mariadb
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: good_car_imports
-      MYSQL_USER: gci_user
-      MYSQL_PASSWORD: gci_password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-good_car_imports}
+      MYSQL_USER: ${MYSQL_USER:-gci_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-gci_password}
     ports:
       - "3306:3306"
     volumes:
       - mariadb_data:/var/lib/mysql
-      # Map the legacy DB backup to initialize if needed:
-      # - ../good-car-imports/database_backup.sql:/docker-entrypoint-initdb.d/legacy_dump.sql
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=100
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   redis:
     image: redis:7-alpine
@@ -26,8 +28,47 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    # Memory constrained to 256MB as specified in the Phase 1 memory budget
     command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gci-web
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - DATABASE_URL=mysql://${MYSQL_USER:-gci_user}:${MYSQL_PASSWORD:-gci_password}@mariadb:3306/${MYSQL_DATABASE:-good_car_imports}?connection_limit=20&pool_timeout=10
+      - REDIS_URL=redis://redis:6379
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      - JWT_SECRET=${JWT_SECRET:-supersecretkeyatleast64characterslongforgoodcarimportsproductionsecurity}
+      - JWT_COOKIE_NAME=${JWT_COOKIE_NAME:-gci_session}
+      - JWT_EXPIRY=${JWT_EXPIRY:-24h}
+      - UPLOAD_DIR=/app/public/uploads
+      - UPLOAD_URL_PREFIX=/uploads
+      - MAX_UPLOAD_SIZE_BYTES=10485760
+      - WORKER_CONCURRENCY=2
+      - AUTO_SEED=${AUTO_SEED:-true}
+      - ADMIN_INITIAL_PASSWORD=${ADMIN_INITIAL_PASSWORD:-password123}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./public/uploads:/app/public/uploads
 
 volumes:
   mariadb_data:

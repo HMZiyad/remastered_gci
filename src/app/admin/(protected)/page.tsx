@@ -6,7 +6,7 @@ import Link from "next/link";
 import { BusinessAnalyticsCard } from "@/components/admin/BusinessAnalyticsCard";
 import { BrandSalesGraphCard, BrandGraphData, BrandSalesSummary } from "@/components/admin/BrandSalesGraphCard";
 
-export const instant = false;
+export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
   const session = await getSession();
