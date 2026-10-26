@@ -65,12 +65,12 @@ export function Header() {
           left: 0,
           right: 0,
           zIndex: 1000,
-          background: scrolled || mobileMenuOpen ? "rgba(10, 10, 10, 0.92)" : "transparent",
-          backdropFilter: scrolled || mobileMenuOpen ? "blur(16px)" : "none",
-          WebkitBackdropFilter: scrolled || mobileMenuOpen ? "blur(16px)" : "none",
-          borderBottom: scrolled || mobileMenuOpen ? "1px solid rgba(255, 255, 255, 0.1)" : "none",
-          boxShadow: scrolled ? "0 4px 20px rgba(0, 0, 0, 0.4)" : "none",
-          transition: "background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease",
+          background: pathname === "/" && !scrolled && !mobileMenuOpen ? "transparent" : "var(--header-bg)",
+          backdropFilter: "blur(20px) saturate(1.2)",
+          WebkitBackdropFilter: "blur(20px) saturate(1.2)",
+          borderBottom: pathname === "/" && !scrolled && !mobileMenuOpen ? "none" : "1px solid var(--glass-border)",
+          boxShadow: pathname === "/" && !scrolled ? "none" : "var(--header-box-shadow)",
+          transition: "background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, box-shadow 0.3s ease",
         }}
       >
         <div
@@ -80,8 +80,8 @@ export function Header() {
             alignItems: "center",
             justifyContent: "space-between",
             height: "80px",
-            padding: "0 clamp(14px, 3vw, 36px)",
-            maxWidth: "var(--container-max, 1400px)",
+            padding: "0 var(--margin-desktop, clamp(40px, 3.2vw, 60px))",
+            maxWidth: "100%",
             margin: "0 auto",
             width: "100%",
             boxSizing: "border-box",
@@ -112,7 +112,8 @@ export function Header() {
                 const isActive =
                   link.href === "/"
                     ? pathname === "/"
-                    : pathname.startsWith(link.href);
+                    : pathname.startsWith(link.href) ||
+                      (link.href === "/inventory" && pathname.startsWith("/stock"));
                 return (
                   <li key={link.href}>
                     <Link
@@ -121,17 +122,17 @@ export function Header() {
                         fontFamily: "var(--font-body, 'Inter', sans-serif)",
                         fontSize: "14px",
                         fontWeight: isActive ? 700 : 500,
-                        color: isActive ? "#ffffff" : "rgba(255, 255, 255, 0.8)",
+                        color: isActive ? "var(--nav-link-active)" : "var(--nav-link)",
                         paddingBottom: "4px",
-                        borderBottom: isActive ? "2px solid #bc001f" : "2px solid transparent",
+                        borderBottom: isActive ? "2px solid var(--stock-accent-red)" : "2px solid transparent",
                         textDecoration: "none",
                         transition: "color 0.2s ease, border-color 0.2s ease",
                       }}
                       onMouseEnter={(e) => {
-                        if (!isActive) e.currentTarget.style.color = "#ffffff";
+                        if (!isActive) e.currentTarget.style.color = "var(--nav-link-hover)";
                       }}
                       onMouseLeave={(e) => {
-                        if (!isActive) e.currentTarget.style.color = "rgba(255, 255, 255, 0.8)";
+                        if (!isActive) e.currentTarget.style.color = "var(--nav-link)";
                       }}
                     >
                       {link.label}
@@ -149,33 +150,32 @@ export function Header() {
             {/* Desktop Call CTA */}
             <Link
               href="tel:+8801700000000"
-              className="desktop-call-cta"
+              className="desktop-call-cta gci-btn-shine"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "8px",
+                justifyContent: "center",
                 fontFamily: "var(--font-body, 'Inter', sans-serif)",
                 fontSize: "13px",
                 fontWeight: 700,
                 color: "#ffffff",
-                background: "linear-gradient(135deg, #bc001f 0%, #e6192e 100%)",
-                padding: "9px 20px",
+                background: "var(--gradient-red-btn)",
+                padding: "9px 22px",
                 borderRadius: "9999px",
                 textDecoration: "none",
-                letterSpacing: "0.02em",
-                boxShadow: "0 4px 14px rgba(188, 0, 31, 0.35)",
-                transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                letterSpacing: "0.01em",
+                boxShadow: "var(--shadow-red-glow)",
+                transition: "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-1px)";
-                e.currentTarget.style.boxShadow = "0 6px 20px rgba(188, 0, 31, 0.5)";
+                e.currentTarget.style.transform = "translateY(-2px) scale(1.02)";
+                e.currentTarget.style.boxShadow = "0 6px 24px rgba(239, 68, 68, 0.4), 0 0 0 1px rgba(239, 68, 68, 0.1)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 4px 14px rgba(188, 0, 31, 0.35)";
+                e.currentTarget.style.transform = "translateY(0) scale(1)";
+                e.currentTarget.style.boxShadow = "var(--shadow-red-glow)";
               }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>call</span>
               <span>Call Now</span>
             </Link>
 
@@ -194,10 +194,8 @@ export function Header() {
                 width: "42px",
                 height: "42px",
                 borderRadius: "10px",
-                backgroundColor: "rgba(255, 255, 255, 0.12)",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
+                backgroundColor: "var(--toggle-btn-bg)",
+                border: "1px solid var(--toggle-btn-border)",
                 cursor: "pointer",
                 padding: 0,
                 gap: "5px",
@@ -212,7 +210,7 @@ export function Header() {
                   display: "block",
                   width: "20px",
                   height: "2px",
-                  backgroundColor: "#ffffff",
+                  backgroundColor: "var(--nav-link-hover)",
                   borderRadius: "2px",
                   transition: "transform 0.25s ease, opacity 0.25s ease",
                   transform: mobileMenuOpen ? "translateY(7px) rotate(45deg)" : "none",
@@ -223,7 +221,7 @@ export function Header() {
                   display: "block",
                   width: "20px",
                   height: "2px",
-                  backgroundColor: "#ffffff",
+                  backgroundColor: "var(--nav-link-hover)",
                   borderRadius: "2px",
                   transition: "opacity 0.25s ease",
                   opacity: mobileMenuOpen ? 0 : 1,
@@ -234,7 +232,7 @@ export function Header() {
                   display: "block",
                   width: "20px",
                   height: "2px",
-                  backgroundColor: "#ffffff",
+                  backgroundColor: "var(--nav-link-hover)",
                   borderRadius: "2px",
                   transition: "transform 0.25s ease, opacity 0.25s ease",
                   transform: mobileMenuOpen ? "translateY(-7px) rotate(-45deg)" : "none",
@@ -254,9 +252,10 @@ export function Header() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: "rgba(8, 8, 8, 0.96)",
+          backgroundColor: "var(--header-bg)",
           backdropFilter: "blur(24px)",
           WebkitBackdropFilter: "blur(24px)",
+          borderTop: "1px solid var(--header-border)",
           zIndex: 999,
           display: "flex",
           flexDirection: "column",
@@ -288,14 +287,14 @@ export function Header() {
                       justifyContent: "space-between",
                       padding: "14px 18px",
                       borderRadius: "12px",
-                      backgroundColor: isActive ? "rgba(188, 0, 31, 0.2)" : "rgba(255, 255, 255, 0.04)",
-                      border: isActive ? "1px solid rgba(188, 0, 31, 0.5)" : "1px solid rgba(255, 255, 255, 0.08)",
+                      backgroundColor: isActive ? "rgba(230, 25, 46, 0.12)" : "var(--stock-badge-bg)",
+                      border: isActive ? "1px solid var(--stock-accent-red)" : "1px solid var(--stock-card-border)",
                       fontFamily: "var(--font-headline, 'Hanken Grotesk', sans-serif)",
                       fontSize: "18px",
                       fontWeight: isActive ? 800 : 600,
-                      color: isActive ? "#ffdad7" : "#ffffff",
+                      color: isActive ? "var(--stock-accent-red)" : "var(--stock-text-primary)",
                       textDecoration: "none",
-                      transition: "background-color 0.15s ease",
+                      transition: "background-color 0.15s ease, color 0.15s ease",
                     }}
                   >
                     <span>{link.label}</span>
@@ -303,7 +302,7 @@ export function Header() {
                       className="material-symbols-outlined"
                       style={{
                         fontSize: "20px",
-                        color: isActive ? "#bc001f" : "rgba(255, 255, 255, 0.4)",
+                        color: isActive ? "var(--stock-accent-red)" : "var(--stock-label-color)",
                       }}
                     >
                       arrow_forward_ios
@@ -378,6 +377,9 @@ export function Header() {
           }
           .mobile-burger-button {
             display: flex !important;
+          }
+          .header-inner {
+            padding: 0 16px !important;
           }
         }
         @media (min-width: 861px) {

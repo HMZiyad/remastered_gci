@@ -34,9 +34,9 @@ export default async function Home() {
       </div>
 
       {/* ===== FEATURED INVENTORY ===== */}
-      <section style={{ padding: "80px 0", backgroundColor: "#ea081c" }}>
+      <section style={{ padding: "80px 0", backgroundColor: "#ea081c", position: "relative" }}>
         <div className="container">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "var(--unit-lg)", flexWrap: "wrap", gap: "var(--unit-md)" }}>
+          <div className="gci-reveal" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "var(--unit-lg)", flexWrap: "wrap", gap: "var(--unit-md)" }}>
             <div>
               <div
                 style={{
@@ -53,15 +53,17 @@ export default async function Home() {
                   textTransform: "uppercase",
                   color: "#ffffff",
                   marginBottom: "8px",
+                  backdropFilter: "blur(6px)",
                 }}
               >
                 <span>AUCTION GRADED IMPORTS</span>
               </div>
-              <h2 className="text-headline-lg" style={{ marginBottom: "var(--unit-xs)", color: "#ffffff", fontWeight: 800 }}>Featured Inventory</h2>
-              <p className="text-body-lg" style={{ color: "rgba(255, 255, 255, 0.9)" }}>Our hand-picked selection of high-grade Japanese and European imports.</p>
+              <h2 className="text-headline-lg" style={{ marginBottom: "var(--unit-xs)", color: "#ffffff", fontWeight: 800, textShadow: "0 2px 10px rgba(0, 0, 0, 0.2)" }}>Featured Inventory</h2>
+              <p className="text-body-lg" style={{ color: "rgba(255, 255, 255, 0.92)" }}>Our hand-picked selection of high-grade Japanese and European imports.</p>
             </div>
             <Link
               href="/inventory"
+              className="gci-btn-shine"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -70,11 +72,11 @@ export default async function Home() {
                 color: "#bc001f",
                 fontWeight: 700,
                 fontSize: "14px",
-                padding: "12px 24px",
+                padding: "12px 26px",
                 borderRadius: "9999px",
                 textDecoration: "none",
-                boxShadow: "0 10px 24px rgba(0, 0, 0, 0.25)",
-                transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                boxShadow: "0 10px 28px rgba(0, 0, 0, 0.3)",
+                transition: "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1)",
               }}
             >
               <span>View All</span>
@@ -83,9 +85,24 @@ export default async function Home() {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "var(--unit-lg)" }}>
-            {featuredVehicles.map((v: any) => (
-              <div key={v.id} className="vehicle-card" style={{ display: "flex", flexDirection: "column", backgroundColor: "#ffffff", borderRadius: "18px", overflow: "hidden", boxShadow: "0 16px 40px rgba(0, 0, 0, 0.25)", border: "1px solid rgba(255, 255, 255, 0.8)", transition: "box-shadow var(--transition-base), transform var(--transition-base)", cursor: "pointer" }}>
-                <Link href={`/vehicles/${v.slug}`} style={{ display: "block", position: "relative", height: "220px", backgroundColor: "#f3f4f5" }}>
+            {featuredVehicles.map((v: any, index: number) => (
+              <div
+                key={v.id}
+                className="vehicle-card gci-reveal"
+                data-reveal-delay={`${index * 120}ms`}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  backgroundColor: "#ffffff",
+                  borderRadius: "18px",
+                  overflow: "hidden",
+                  boxShadow: "0 16px 40px rgba(0, 0, 0, 0.22)",
+                  border: "1px solid rgba(255, 255, 255, 0.8)",
+                  transition: "box-shadow var(--transition-base), transform var(--transition-base)",
+                  cursor: "pointer",
+                }}
+              >
+                <Link href={`/vehicles/${v.slug}`} style={{ display: "block", position: "relative", height: "220px", backgroundColor: "#f3f4f5", overflow: "hidden" }}>
                   {v.cover_photo ? (
                     <img src={`/uploads/${v.cover_photo}`} alt={v.car_name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : (
@@ -95,12 +112,12 @@ export default async function Home() {
                   )}
 
                   {v.badge_text && (
-                    <span style={{ position: "absolute", top: "12px", left: "12px", backgroundColor: v.badge_text === "BEST VALUE" ? "var(--tertiary)" : "var(--primary)", color: "white", padding: "4px 8px", borderRadius: "var(--radius)", fontSize: "12px", fontWeight: 700, textTransform: "uppercase" }}>
+                    <span style={{ position: "absolute", top: "12px", left: "12px", backgroundColor: v.badge_text === "BEST VALUE" ? "var(--tertiary)" : "var(--primary)", color: "white", padding: "4px 8px", borderRadius: "var(--radius)", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", boxShadow: "0 2px 8px rgba(0,0,0,0.2)" }}>
                       {v.badge_text}
                     </span>
                   )}
                   {v.auction_grade && (
-                    <span style={{ position: "absolute", bottom: "12px", right: "12px", backgroundColor: "rgba(0,0,0,0.7)", color: "white", padding: "4px 8px", borderRadius: "var(--radius)", fontSize: "12px", fontWeight: 600, backdropFilter: "blur(4px)" }}>
+                    <span style={{ position: "absolute", bottom: "12px", right: "12px", backgroundColor: "rgba(0,0,0,0.75)", color: "white", padding: "4px 8px", borderRadius: "var(--radius)", fontSize: "12px", fontWeight: 600, backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.15)" }}>
                       ☆ {v.auction_grade} Grade
                     </span>
                   )}
@@ -128,7 +145,7 @@ export default async function Home() {
                     </span>
                   </div>
 
-                  <Link href={`/vehicles/${v.slug}`} style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 600, color: "#181c20" }}>
+                  <Link href={`/vehicles/${v.slug}`} style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 600, color: "#181c20", transition: "color 0.2s ease" }}>
                     View Details <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>arrow_forward</span>
                   </Link>
                 </div>

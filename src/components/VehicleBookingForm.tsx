@@ -79,10 +79,17 @@ export function VehicleBookingForm({
 
       <div style={{ marginBottom: "16px" }}>
         <label
-          className="text-label-sm"
-          style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)" }}
+          style={{
+            display: "block",
+            fontSize: "11px",
+            fontWeight: 700,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            color: "var(--stock-label-color)",
+            marginBottom: "6px",
+          }}
         >
-          Full Name
+          FULL NAME
         </label>
         <input
           type="text"
@@ -91,21 +98,32 @@ export function VehicleBookingForm({
           placeholder="Enter your name"
           style={{
             width: "100%",
-            padding: "12px",
-            borderRadius: "var(--radius)",
-            border: "1px solid var(--surface-container-high)",
-            backgroundColor: "var(--surface-container-lowest)",
-            color: "var(--on-surface)",
+            padding: "12px 14px",
+            borderRadius: "10px",
+            border: "1px solid var(--glass-border)",
+            backgroundColor: "var(--stock-input-bg)",
+            color: "var(--stock-input-color)",
+            fontSize: "14px",
+            outline: "none",
+            boxSizing: "border-box",
+            transition: "border-color 0.2s ease, background-color 0.25s ease, color 0.25s ease",
           }}
         />
       </div>
 
       <div style={{ marginBottom: "16px" }}>
         <label
-          className="text-label-sm"
-          style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)" }}
+          style={{
+            display: "block",
+            fontSize: "11px",
+            fontWeight: 700,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            color: "var(--stock-label-color)",
+            marginBottom: "6px",
+          }}
         >
-          Phone Number
+          PHONE NUMBER
         </label>
         <input
           type="tel"
@@ -114,33 +132,50 @@ export function VehicleBookingForm({
           placeholder="+880..."
           style={{
             width: "100%",
-            padding: "12px",
-            borderRadius: "var(--radius)",
-            border: "1px solid var(--surface-container-high)",
-            backgroundColor: "var(--surface-container-lowest)",
-            color: "var(--on-surface)",
+            padding: "12px 14px",
+            borderRadius: "10px",
+            border: "1px solid var(--glass-border)",
+            backgroundColor: "var(--stock-input-bg)",
+            color: "var(--stock-input-color)",
+            fontSize: "14px",
+            outline: "none",
+            boxSizing: "border-box",
+            transition: "border-color 0.2s ease, background-color 0.25s ease, color 0.25s ease",
           }}
         />
       </div>
 
       <div style={{ marginBottom: "20px" }}>
         <label
-          className="text-label-sm"
-          style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)" }}
+          style={{
+            display: "block",
+            fontSize: "11px",
+            fontWeight: 700,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            color: "var(--stock-label-color)",
+            marginBottom: "6px",
+          }}
         >
-          Message (Optional)
+          MESSAGE (OPTIONAL)
         </label>
         <textarea
           name="message"
-          placeholder="I would like to inspect this vehicle or request pricing details..."
+          rows={3}
+          placeholder="I would like to inspect this vehicle..."
           style={{
             width: "100%",
-            padding: "12px",
-            borderRadius: "var(--radius)",
-            border: "1px solid var(--surface-container-high)",
-            backgroundColor: "var(--surface-container-lowest)",
-            color: "var(--on-surface)",
-            minHeight: "90px",
+            padding: "12px 14px",
+            borderRadius: "10px",
+            border: "1px solid var(--glass-border)",
+            backgroundColor: "var(--stock-input-bg)",
+            color: "var(--stock-input-color)",
+            fontSize: "14px",
+            outline: "none",
+            boxSizing: "border-box",
+            resize: "vertical",
+            minHeight: "80px",
+            transition: "border-color 0.2s ease, background-color 0.25s ease, color 0.25s ease",
           }}
         ></textarea>
       </div>
@@ -148,20 +183,25 @@ export function VehicleBookingForm({
       <button
         type="submit"
         disabled={loading}
+        className="gci-btn-shine"
         style={{
           width: "100%",
-          padding: "14px",
-          backgroundColor: "var(--primary)",
-          color: "white",
-          fontWeight: 600,
-          borderRadius: "var(--radius-full)",
-          transition: "background var(--transition-fast)",
-          opacity: loading ? 0.7 : 1,
-          cursor: loading ? "not-allowed" : "pointer",
+          padding: "13px",
+          background: "var(--red-gradient)",
+          color: "#ffffff",
+          fontWeight: 700,
+          fontSize: "14px",
+          borderRadius: "10px",
           border: "none",
+          cursor: loading ? "not-allowed" : "pointer",
+          letterSpacing: "0.04em",
+          textTransform: "uppercase",
+          boxShadow: "var(--shadow-red-glow)",
+          opacity: loading ? 0.7 : 1,
+          transition: "transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease",
         }}
       >
-        {loading ? "Submitting..." : "Book Inspection"}
+        {loading ? "Submitting..." : "BOOK INSPECTION"}
       </button>
     </form>
   );

@@ -62,24 +62,24 @@ export function ContactForm() {
       )}
 
       <div style={{ marginBottom: "16px" }}>
-        <label className="text-label-sm" style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)" }}>Full Name</label>
-        <input type="text" name="full_name" required placeholder="John Doe" style={{ width: "100%", padding: "12px", borderRadius: "var(--radius)", border: "1px solid var(--surface-container-high)", backgroundColor: "var(--surface-container-lowest)", color: "var(--on-surface)" }} />
+        <label className="text-label-sm" style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)", fontSize: "12px", fontWeight: 600 }}>Full Name</label>
+        <input type="text" name="full_name" required placeholder="John Doe" style={{ width: "100%", padding: "12px 14px", borderRadius: "10px", border: "1px solid var(--glass-border)", backgroundColor: "var(--surface-container-lowest)", color: "var(--on-surface)", fontSize: "14px", transition: "border-color 0.2s ease, box-shadow 0.2s ease" }} />
       </div>
       
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
+      <div className="contact-form-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
         <div>
-          <label className="text-label-sm" style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)" }}>Phone Number</label>
-          <input type="tel" name="phone" required placeholder="+880..." style={{ width: "100%", padding: "12px", borderRadius: "var(--radius)", border: "1px solid var(--surface-container-high)", backgroundColor: "var(--surface-container-lowest)", color: "var(--on-surface)" }} />
+          <label className="text-label-sm" style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)", fontSize: "12px", fontWeight: 600 }}>Phone Number</label>
+          <input type="tel" name="phone" required placeholder="+880..." style={{ width: "100%", padding: "12px 14px", borderRadius: "10px", border: "1px solid var(--glass-border)", backgroundColor: "var(--surface-container-lowest)", color: "var(--on-surface)", fontSize: "14px", transition: "border-color 0.2s ease, box-shadow 0.2s ease" }} />
         </div>
         <div>
-          <label className="text-label-sm" style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)" }}>Email Address</label>
-          <input type="email" name="email" placeholder="john@example.com" style={{ width: "100%", padding: "12px", borderRadius: "var(--radius)", border: "1px solid var(--surface-container-high)", backgroundColor: "var(--surface-container-lowest)", color: "var(--on-surface)" }} />
+          <label className="text-label-sm" style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)", fontSize: "12px", fontWeight: 600 }}>Email Address</label>
+          <input type="email" name="email" placeholder="john@example.com" style={{ width: "100%", padding: "12px 14px", borderRadius: "10px", border: "1px solid var(--glass-border)", backgroundColor: "var(--surface-container-lowest)", color: "var(--on-surface)", fontSize: "14px", transition: "border-color 0.2s ease, box-shadow 0.2s ease" }} />
         </div>
       </div>
       
       <div style={{ marginBottom: "16px" }}>
-        <label className="text-label-sm" style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)" }}>Interested In</label>
-        <select name="interested_in" style={{ width: "100%", padding: "12px", borderRadius: "var(--radius)", border: "1px solid var(--surface-container-high)", backgroundColor: "var(--surface-container-lowest)", color: "var(--on-surface)" }}>
+        <label className="text-label-sm" style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)", fontSize: "12px", fontWeight: 600 }}>Interested In</label>
+        <select name="interested_in" style={{ width: "100%", padding: "12px 14px", borderRadius: "10px", border: "1px solid var(--glass-border)", backgroundColor: "var(--surface-container-lowest)", color: "var(--on-surface)", fontSize: "14px", transition: "border-color 0.2s ease, box-shadow 0.2s ease" }}>
           <option value="General Inquiry">General Inquiry</option>
           <option value="Ready Stock Vehicle">Ready Stock Vehicle</option>
           <option value="Pre-Order / Import">Pre-Order / Import</option>
@@ -88,13 +88,21 @@ export function ContactForm() {
       </div>
       
       <div style={{ marginBottom: "24px" }}>
-        <label className="text-label-sm" style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)" }}>Message</label>
-        <textarea name="message" required placeholder="How can we help you today?" style={{ width: "100%", padding: "12px", borderRadius: "var(--radius)", border: "1px solid var(--surface-container-high)", backgroundColor: "var(--surface-container-lowest)", color: "var(--on-surface)", minHeight: "120px" }}></textarea>
+        <label className="text-label-sm" style={{ display: "block", marginBottom: "8px", color: "var(--on-surface-variant)", fontSize: "12px", fontWeight: 600 }}>Message</label>
+        <textarea name="message" required placeholder="How can we help you today?" style={{ width: "100%", padding: "12px 14px", borderRadius: "10px", border: "1px solid var(--glass-border)", backgroundColor: "var(--surface-container-lowest)", color: "var(--on-surface)", minHeight: "120px", fontSize: "14px", lineHeight: 1.5, transition: "border-color 0.2s ease, box-shadow 0.2s ease" }}></textarea>
       </div>
       
-      <button type="submit" disabled={loading} style={{ width: "100%", padding: "14px", backgroundColor: "var(--primary)", color: "white", fontWeight: 600, borderRadius: "var(--radius-full)", transition: "background var(--transition-fast)", opacity: loading ? 0.7 : 1 }}>
+      <button type="submit" disabled={loading} className="gci-btn-shine" style={{ width: "100%", padding: "14px", background: "var(--red-gradient)", color: "white", fontWeight: 700, borderRadius: "var(--radius-full)", border: "none", boxShadow: "var(--shadow-red-glow)", cursor: loading ? "not-allowed" : "pointer", transition: "transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease", opacity: loading ? 0.7 : 1 }}>
         {loading ? "Sending..." : "Send Inquiry"}
       </button>
+
+      <style>{`
+        @media (max-width: 600px) {
+          .contact-form-grid-2 {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </form>
   );
 }

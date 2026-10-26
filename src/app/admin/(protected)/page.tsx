@@ -107,6 +107,10 @@ export default async function AdminDashboardPage() {
   // 4. Inquiries & Pre-Orders
   const totalInquiries = await prisma.inquiry.count();
   const totalPreOrders = await prisma.preOrder.count();
+  const recentPreOrders = await prisma.preOrder.findMany({
+    orderBy: { created_at: "desc" },
+    take: 4,
+  });
 
   // Recent Sales (at least 4 recent sold vehicles)
   const recentSales = await prisma.sale.findMany({
@@ -288,6 +292,9 @@ export default async function AdminDashboardPage() {
               <Link href="/admin/inventory" className="hero-action-circle" title="View Fleet">
                 <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>directions_car</span>
               </Link>
+              <Link href="/admin/inquiries?tab=pre_orders" className="hero-action-circle" title="Pre-Orders & Leads">
+                <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>inventory_2</span>
+              </Link>
               <Link href="?modal=add-vehicle" className="hero-action-circle" title="Inward New Vehicle">
                 <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>add</span>
               </Link>
@@ -323,6 +330,17 @@ export default async function AdminDashboardPage() {
                 {showroomCount} Showroom Ready
               </span>
             </div>
+
+            <Link href="/admin/inquiries?tab=pre_orders" className="metric-pill-box" style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}>
+              <span className="metric-pill-label">Pre-Order Demands</span>
+              <span className="metric-pill-value" style={{ color: "var(--admin-accent-red, #ff4757)" }}>
+                {totalPreOrders} <span style={{ fontSize: "15px", fontWeight: 600, color: "var(--admin-text-muted)" }}>Orders</span>
+              </span>
+              <span style={{ fontSize: "11.5px", color: "var(--admin-accent-blue)", fontWeight: 600, display: "flex", alignItems: "center", gap: "2px" }}>
+                <span>{totalInquiries} Total Leads</span>
+                <span className="material-symbols-outlined" style={{ fontSize: "13px" }}>arrow_forward</span>
+              </span>
+            </Link>
           </div>
 
           {/* Multi-Segment Fleet Progress Breakdown */}
@@ -400,6 +418,87 @@ export default async function AdminDashboardPage() {
           <Link href="/admin/sales-register" className="sales-add-btn">
             <span className="sales-add-circle">+</span>
             <span>View Full Sales Register</span>
+          </Link>
+        </div>
+
+        {/* Bottom Card 2: Recent Pre-Order Inquiries */}
+        <div className="recent-sales-card">
+          <div className="admin-card-header" style={{ marginBottom: "8px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <h2 className="admin-card-title">Live Pre-Order Inquiries</h2>
+              <span style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "12px",
+                background: "rgba(239, 68, 68, 0.1)",
+                color: "#ef4444",
+                border: "1px solid rgba(239, 68, 68, 0.2)"
+              }}>
+                AUCTION SOURCING
+              </span>
+            </div>
+            <span className="admin-card-badge">
+              <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>inventory_2</span>
+              {totalPreOrders}
+            </span>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {recentPreOrders.map((po) => (
+              <div key={po.id} className="sales-member-row">
+                <div className="sales-member-info">
+                  <div style={{
+                    width: "44px",
+                    height: "44px",
+                    borderRadius: "50%",
+                    backgroundColor: "rgba(239, 68, 68, 0.08)",
+                    border: "1.5px solid rgba(239, 68, 68, 0.2)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "var(--stock-accent-red, #ef4444)",
+                    fontWeight: 800,
+                    fontSize: "15px",
+                    flexShrink: 0
+                  }}>
+                    {po.full_name?.charAt(0)?.toUpperCase() || "P"}
+                  </div>
+                  <div>
+                    <div className="sales-member-name" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <span>{po.full_name}</span>
+                      <span className="pill-badge new" style={{ fontSize: "10px", padding: "1px 6px" }}>
+                        {po.status ? po.status.toUpperCase() : "NEW"}
+                      </span>
+                    </div>
+                    <div className="sales-member-role">
+                      <strong style={{ color: "var(--admin-text-main)" }}>{po.make_model}</strong>
+                      {po.budget_min_bdt ? ` • ${formatBDT(Number(po.budget_min_bdt))}` : ""}
+                      {po.phone ? ` • ${po.phone}` : ""}
+                    </div>
+                  </div>
+                </div>
+
+                <Link
+                  href="/admin/inquiries?tab=pre_orders"
+                  className="sales-member-action"
+                  title="View Pre-Order Sourcing Details"
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>visibility</span>
+                </Link>
+              </div>
+            ))}
+
+            {recentPreOrders.length === 0 && (
+              <div style={{ padding: "16px 0", color: "var(--admin-text-muted)", fontSize: "13px", textAlign: "center" }}>
+                No pre-orders submitted yet.
+              </div>
+            )}
+          </div>
+
+          <Link href="/admin/inquiries?tab=pre_orders" className="sales-add-btn">
+            <span className="sales-add-circle">+</span>
+            <span>View All Pre-Order Inquiries ({totalPreOrders})</span>
           </Link>
         </div>
 
