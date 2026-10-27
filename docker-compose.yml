@@ -42,7 +42,7 @@ services:
     container_name: gci-web
     restart: always
     ports:
-      - "${APP_BIND_IP:-127.0.0.1}:3000:3000"
+      - "${APP_BIND_IP:-0.0.0.0}:3000:3000"
     env_file:
       - path: .env
         required: false
@@ -62,6 +62,8 @@ services:
       - WORKER_CONCURRENCY=2
       - AUTO_SEED=${AUTO_SEED:-true}
       - ADMIN_INITIAL_PASSWORD=${ADMIN_INITIAL_PASSWORD:-password123}
+      - NEXT_PUBLIC_WHATSAPP_NUMBER=${NEXT_PUBLIC_WHATSAPP_NUMBER:-8801992424492}
+      - NEXT_PUBLIC_COMPANY_PHONE=${NEXT_PUBLIC_COMPANY_PHONE:-+8801992424492}
     depends_on:
       mariadb:
         condition: service_healthy

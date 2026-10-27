@@ -17,6 +17,7 @@ export interface SerializedVehicle {
   mileage_km: number | null;
   engine_cc: number | null;
   chassis_code: string;
+  transmission: string | null;
   status: string;
   slug: string | null;
 }
@@ -94,25 +95,21 @@ export function InventoryTable({ vehicles }: { vehicles: SerializedVehicle[] }) 
         <table className="modern-table" style={{ width: "100%" }}>
           <thead>
             <tr>
-              <th style={{ textAlign: "left", verticalAlign: "middle", paddingLeft: "16px" }}>Car Brand</th>
-              <th style={{ textAlign: "center", verticalAlign: "middle" }}>BODY</th>
-              <th style={{ textAlign: "center", verticalAlign: "middle" }}>FUEL</th>
+              <th style={{ textAlign: "left", verticalAlign: "middle", paddingLeft: "16px" }}>CAR BRAND</th>
               <th style={{ textAlign: "center", verticalAlign: "middle" }}>PACKAGE</th>
-              <th style={{ textAlign: "center", verticalAlign: "middle" }}>YOM</th>
+              <th style={{ textAlign: "center", verticalAlign: "middle" }}>YEAR OF MANUFACTURE</th>
               <th style={{ textAlign: "center", verticalAlign: "middle" }}>COLOR</th>
-              <th style={{ textAlign: "center", verticalAlign: "middle" }}>GRADE</th>
-              <th style={{ textAlign: "center", verticalAlign: "middle" }}>MILEAGE</th>
-              <th style={{ textAlign: "center", verticalAlign: "middle" }}>ENGINE</th>
-              <th style={{ textAlign: "center", verticalAlign: "middle" }}>CHASSIS</th>
+              <th style={{ textAlign: "center", verticalAlign: "middle" }}>AUC/GRADE</th>
+              <th style={{ textAlign: "center", verticalAlign: "middle" }}>MILEAGE (KM)</th>
+              <th style={{ textAlign: "center", verticalAlign: "middle" }}>ENGINE /CC</th>
+              <th style={{ textAlign: "center", verticalAlign: "middle" }}>CHASSIS NO.</th>
+              <th style={{ textAlign: "center", verticalAlign: "middle" }}>TRANS.</th>
               <th style={{ textAlign: "center", verticalAlign: "middle" }}>STATUS</th>
               <th style={{ textAlign: "center", verticalAlign: "middle", paddingRight: "16px" }}>ACTIONS</th>
             </tr>
           </thead>
           <tbody>
             {paginatedVehicles.map((v) => {
-              const bodyTypeLabel = (v.body_type === "HIACE_Van" ? "HIACE-Van" : v.body_type) || "-";
-              const fuelTypeLabel = v.fuel_type || "-";
-
               return (
                 <tr key={v.id}>
                   {/* Car Brand & Photo */}
@@ -140,24 +137,6 @@ export function InventoryTable({ vehicles }: { vehicles: SerializedVehicle[] }) 
                     </div>
                   </td>
 
-                  {/* Body Type */}
-                  <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: 600, fontSize: "11.5px" }}>
-                    {bodyTypeLabel}
-                  </td>
-
-                  {/* Fuel Type */}
-                  <td
-                    style={{
-                      textAlign: "center",
-                      verticalAlign: "middle",
-                      fontWeight: 600,
-                      fontSize: "11.5px",
-                      color: "var(--admin-text-muted)",
-                    }}
-                  >
-                    {fuelTypeLabel}
-                  </td>
-
                   {/* Package */}
                   <td
                     style={{
@@ -183,13 +162,13 @@ export function InventoryTable({ vehicles }: { vehicles: SerializedVehicle[] }) 
                       verticalAlign: "middle",
                       textTransform: "capitalize",
                       color: "var(--admin-text-muted)",
-                      fontSize: "11px",
+                      fontSize: "11.5px",
                     }}
                   >
                     {v.color_name || "-"}
                   </td>
 
-                  {/* Auction Grade */}
+                  {/* AUC/Grade */}
                   <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                     <span
                       style={{
@@ -205,7 +184,7 @@ export function InventoryTable({ vehicles }: { vehicles: SerializedVehicle[] }) 
                     </span>
                   </td>
 
-                  {/* Mileage */}
+                  {/* Mileage (KM) */}
                   <td
                     style={{
                       textAlign: "center",
@@ -216,19 +195,32 @@ export function InventoryTable({ vehicles }: { vehicles: SerializedVehicle[] }) 
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {new Intl.NumberFormat("en-IN").format(v.mileage_km || 0)} km
+                    {v.mileage_km ? `${new Intl.NumberFormat("en-IN").format(v.mileage_km)} km` : "-"}
                   </td>
 
-                  {/* Engine CC */}
+                  {/* Engine /CC */}
                   <td style={{ textAlign: "center", verticalAlign: "middle", fontSize: "11px", whiteSpace: "nowrap" }}>
                     {v.engine_cc ? `${new Intl.NumberFormat("en-IN").format(v.engine_cc)} cc` : "-"}
                   </td>
 
-                  {/* Chassis */}
+                  {/* Chassis No. */}
                   <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                     <span className="chassis-tag" style={{ fontSize: "10.5px", padding: "2px 6px" }}>
                       {v.chassis_code}
                     </span>
+                  </td>
+
+                  {/* Trans. */}
+                  <td
+                    style={{
+                      textAlign: "center",
+                      verticalAlign: "middle",
+                      fontWeight: 600,
+                      fontSize: "11.5px",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {v.transmission || "AT"}
                   </td>
 
                   {/* Status */}
@@ -270,7 +262,7 @@ export function InventoryTable({ vehicles }: { vehicles: SerializedVehicle[] }) 
 
             {vehicles.length === 0 && (
               <tr>
-                <td colSpan={12} style={{ padding: "48px", textAlign: "center", color: "var(--admin-text-muted)" }}>
+                <td colSpan={11} style={{ padding: "48px", textAlign: "center", color: "var(--admin-text-muted)" }}>
                   No vehicles found for the selected filter.
                 </td>
               </tr>

@@ -67,6 +67,7 @@ export default async function AdminVehiclesPage({
     mileage_km: v.mileage_km,
     engine_cc: v.engine_cc,
     chassis_code: v.chassis_code,
+    transmission: v.transmission,
     status: v.status,
     slug: v.slug,
   }));

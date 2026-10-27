@@ -2,8 +2,50 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, unlink } from "fs/promises";
+import fs from "fs";
 import path from "path";
+
+/**
+ * Safely removes a file from disk if it's located inside the public/uploads directory.
+ * Ignores remote URLs (http/https) and static stock images (/images/...).
+ */
+async function safeDeleteUploadedFile(filePath: string | null | undefined) {
+  if (!filePath) return;
+  // Ignore remote URLs or static /images/ assets
+  if (filePath.startsWith("http://") || filePath.startsWith("https://") || filePath.startsWith("/images/")) {
+    return;
+  }
+
+  try {
+    const uploadBaseDir = path.resolve(
+      process.env.UPLOAD_DIR || path.join(process.cwd(), "public", "uploads")
+    );
+
+    // Strip leading /uploads/ or / if present
+    let cleanRelPath = filePath;
+    if (cleanRelPath.startsWith("/uploads/")) {
+      cleanRelPath = cleanRelPath.replace(/^\/uploads\//, "");
+    } else if (cleanRelPath.startsWith("/")) {
+      cleanRelPath = cleanRelPath.slice(1);
+    }
+
+    const fullPath = path.resolve(uploadBaseDir, cleanRelPath);
+
+    // Security check: ensure path is strictly within uploadBaseDir
+    if (!fullPath.startsWith(uploadBaseDir)) {
+      console.warn("Attempted file deletion outside upload directory:", fullPath);
+      return;
+    }
+
+    if (fs.existsSync(fullPath)) {
+      await unlink(fullPath);
+      console.log(`Deleted media file from disk: ${fullPath}`);
+    }
+  } catch (err) {
+    console.warn(`Could not delete media file ${filePath}:`, err);
+  }
+}
 
 function generateSlug(name: string): string {
   return name
@@ -129,6 +171,23 @@ export async function saveVehicle(id: number | null, formData: FormData) {
       };
 
       if (uploadedPaths.length > 0) {
+        // Clean up old uploaded files from disk
+        const oldPhotos = await prisma.vehiclePhoto.findMany({ where: { vehicle_id: id } });
+        const existingVehicle = await prisma.vehicle.findUnique({ where: { id }, select: { cover_photo: true } });
+
+        const oldFilesToDelete = new Set<string>();
+        if (existingVehicle?.cover_photo && !uploadedPaths.includes(existingVehicle.cover_photo)) {
+          oldFilesToDelete.add(existingVehicle.cover_photo);
+        }
+        for (const p of oldPhotos) {
+          if (p.file_path && !uploadedPaths.includes(p.file_path)) {
+            oldFilesToDelete.add(p.file_path);
+          }
+        }
+        for (const f of oldFilesToDelete) {
+          await safeDeleteUploadedFile(f);
+        }
+
         updateData.cover_photo = uploadedPaths[0];
         await prisma.vehiclePhoto.deleteMany({ where: { vehicle_id: id } });
         await prisma.$transaction(
@@ -241,16 +300,48 @@ export async function saveVehicle(id: number | null, formData: FormData) {
 
 export async function deleteVehicle(id: number) {
   try {
-    // Prisma onDelete: Cascade handles photos, SetNull handles sales/pipeline
+    // 1. Fetch vehicle and all associated photos before deleting from database
+    const vehicle = await prisma.vehicle.findUnique({
+      where: { id },
+      include: { photos: true },
+    });
+
+    if (!vehicle) {
+      return { success: false, error: "Vehicle not found." };
+    }
+
+    // 2. Collect all uploaded media files associated with this vehicle
+    const filesToDelete = new Set<string>();
+    if (vehicle.cover_photo) {
+      filesToDelete.add(vehicle.cover_photo);
+    }
+    if (vehicle.photos && vehicle.photos.length > 0) {
+      for (const p of vehicle.photos) {
+        if (p.file_path) {
+          filesToDelete.add(p.file_path);
+        }
+      }
+    }
+
+    // 3. Delete physical files from disk
+    for (const f of filesToDelete) {
+      await safeDeleteUploadedFile(f);
+    }
+
+    // 4. Delete vehicle from database (Prisma onDelete: Cascade handles photos, SetNull handles sales/pipeline)
     await prisma.vehicle.delete({ where: { id } });
 
     revalidatePath("/admin/inventory");
     revalidatePath("/admin");
     revalidatePath("/admin/sales-register");
     revalidatePath("/inventory");
+    revalidatePath("/stock");
+    revalidatePath("/");
+
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to delete vehicle:", error);
-    return { success: false, error: "Failed to delete vehicle" };
+    const msg = error?.message || String(error);
+    return { success: false, error: msg };
   }
 }

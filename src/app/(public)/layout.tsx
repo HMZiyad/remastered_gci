@@ -24,7 +24,7 @@ export default function PublicLayout({
       
       {/* WhatsApp FAB / Start Chat */}
       <a
-        href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801700000000"}?text=Hello,%20I%20have%20an%20inquiry%20about%20a%20vehicle.`}
+        href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801992424492"}?text=Hello,%20I%20have%20an%20inquiry%20about%20a%20vehicle.`}
         target="_blank"
         rel="noopener noreferrer"
         id="whatsapp-fab"

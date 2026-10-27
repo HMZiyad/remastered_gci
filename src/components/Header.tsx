@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./ThemeToggle";
@@ -15,19 +15,47 @@ const NAV_LINKS = [
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const lastScrollY = useRef(0);
   const pathname = usePathname();
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          const isScrolled = currentScrollY > 15;
+          setScrolled(isScrolled);
+
+          // Auto-hide when scrolling down past 70px; show immediately on scroll up
+          if (!mobileMenuOpen) {
+            const diff = currentScrollY - lastScrollY.current;
+            if (currentScrollY > 70 && diff > 5) {
+              // Scrolling down -> hide navbar
+              setHidden(true);
+            } else if (diff < -5 || currentScrollY <= 15) {
+              // Scrolling up or at the very top -> reveal navbar
+              setHidden(false);
+            }
+          } else {
+            setHidden(false);
+          }
+
+          lastScrollY.current = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [mobileMenuOpen]);
 
   // Auto-close mobile menu on route change
   useEffect(() => {
@@ -58,19 +86,21 @@ export function Header() {
   return (
     <>
       <header
-        className={`site-header ${scrolled ? "scrolled" : ""}`}
+        className={`site-header ${scrolled ? "scrolled" : ""} ${hidden ? "nav-hidden" : ""}`}
         style={{
           position: "fixed",
           top: 0,
           left: 0,
           right: 0,
-          zIndex: 1000,
-          background: pathname === "/" && !scrolled && !mobileMenuOpen ? "transparent" : "var(--header-bg)",
+          zIndex: 10000,
+          background: "var(--header-bg)",
           backdropFilter: "blur(20px) saturate(1.2)",
           WebkitBackdropFilter: "blur(20px) saturate(1.2)",
-          borderBottom: pathname === "/" && !scrolled && !mobileMenuOpen ? "none" : "1px solid var(--glass-border)",
-          boxShadow: pathname === "/" && !scrolled ? "none" : "var(--header-box-shadow)",
-          transition: "background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, box-shadow 0.3s ease",
+          borderBottom: "1px solid var(--glass-border)",
+          boxShadow: scrolled ? "var(--header-box-shadow)" : "none",
+          transform: hidden && !mobileMenuOpen ? "translateY(-100%)" : "translateY(0)",
+          transition: "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease",
+          willChange: "transform",
         }}
       >
         <div
@@ -79,12 +109,13 @@ export function Header() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            height: "80px",
+            height: scrolled ? "62px" : "80px",
             padding: "0 var(--margin-desktop, clamp(40px, 3.2vw, 60px))",
             maxWidth: "100%",
             margin: "0 auto",
             width: "100%",
             boxSizing: "border-box",
+            transition: "height 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
           {/* Logo */}
@@ -92,7 +123,13 @@ export function Header() {
             <img
               src="/images/logo-transparent.png"
               alt="Good Car Imports"
-              style={{ height: "clamp(32px, 5vw, 42px)", width: "auto", maxWidth: "160px", objectFit: "contain" }}
+              style={{
+                height: scrolled ? "32px" : "clamp(34px, 5vw, 42px)",
+                width: "auto",
+                maxWidth: "160px",
+                objectFit: "contain",
+                transition: "height 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
             />
           </Link>
 
@@ -149,7 +186,7 @@ export function Header() {
 
             {/* Desktop Call CTA */}
             <Link
-              href="tel:+8801700000000"
+              href="tel:+8801992424492"
               className="desktop-call-cta gci-btn-shine"
               style={{
                 display: "inline-flex",
@@ -248,36 +285,56 @@ export function Header() {
         className={`mobile-nav-drawer ${mobileMenuOpen ? "open" : ""}`}
         style={{
           position: "fixed",
-          top: "80px",
+          top: scrolled ? "62px" : "80px",
           left: 0,
           right: 0,
           bottom: 0,
           backgroundColor: "var(--header-bg)",
-          backdropFilter: "blur(24px)",
-          WebkitBackdropFilter: "blur(24px)",
+          backdropFilter: "blur(28px) saturate(1.4)",
+          WebkitBackdropFilter: "blur(28px) saturate(1.4)",
           borderTop: "1px solid var(--header-border)",
-          zIndex: 999,
+          zIndex: 9998,
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "24px 20px 36px 20px",
+          padding: "24px 24px 32px 24px",
           overflowY: "auto",
           opacity: mobileMenuOpen ? 1 : 0,
           pointerEvents: mobileMenuOpen ? "auto" : "none",
-          transform: mobileMenuOpen ? "translateY(0)" : "translateY(-12px)",
-          transition: "opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)",
+          transform: mobileMenuOpen ? "translateY(0)" : "translateY(-8px)",
+          transition: "top 0.25s ease, opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+          boxSizing: "border-box",
         }}
       >
-        {/* Navigation Links List */}
-        <nav style={{ width: "100%" }}>
-          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
-            {NAV_LINKS.map((link) => {
+        {/* Navigation Links */}
+        <nav style={{ width: "100%", paddingTop: "8px" }}>
+          <div
+            style={{
+              fontSize: "10px",
+              fontWeight: 700,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              color: "var(--stock-label-color)",
+              marginBottom: "12px",
+              opacity: 0.8,
+            }}
+          >
+            Menu
+          </div>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column" }}>
+            {NAV_LINKS.map((link, idx) => {
               const isActive =
                 link.href === "/"
                   ? pathname === "/"
-                  : pathname.startsWith(link.href);
+                  : pathname.startsWith(link.href) ||
+                    (link.href === "/inventory" && pathname.startsWith("/stock"));
               return (
-                <li key={link.href}>
+                <li
+                  key={link.href}
+                  style={{
+                    borderBottom: "1px solid var(--stock-card-border)",
+                  }}
+                >
                   <Link
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
@@ -285,28 +342,48 @@ export function Header() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
-                      padding: "14px 18px",
-                      borderRadius: "12px",
-                      backgroundColor: isActive ? "rgba(230, 25, 46, 0.12)" : "var(--stock-badge-bg)",
-                      border: isActive ? "1px solid var(--stock-accent-red)" : "1px solid var(--stock-card-border)",
-                      fontFamily: "var(--font-headline, 'Hanken Grotesk', sans-serif)",
-                      fontSize: "18px",
-                      fontWeight: isActive ? 800 : 600,
-                      color: isActive ? "var(--stock-accent-red)" : "var(--stock-text-primary)",
+                      padding: "16px 2px",
                       textDecoration: "none",
-                      transition: "background-color 0.15s ease, color 0.15s ease",
+                      transition: "color 0.2s ease",
                     }}
                   >
-                    <span>{link.label}</span>
-                    <span
-                      className="material-symbols-outlined"
-                      style={{
-                        fontSize: "20px",
-                        color: isActive ? "var(--stock-accent-red)" : "var(--stock-label-color)",
-                      }}
-                    >
-                      arrow_forward_ios
-                    </span>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "14px" }}>
+                      <span
+                        style={{
+                          fontSize: "11px",
+                          fontFamily: "monospace",
+                          fontWeight: 600,
+                          color: isActive ? "var(--stock-accent-red)" : "var(--stock-label-color)",
+                          opacity: isActive ? 1 : 0.5,
+                        }}
+                      >
+                        {`0${idx + 1}`}
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-headline, 'Hanken Grotesk', sans-serif)",
+                          fontSize: "23px",
+                          fontWeight: isActive ? 700 : 500,
+                          letterSpacing: "-0.015em",
+                          color: isActive ? "var(--stock-accent-red)" : "var(--stock-text-primary)",
+                          transition: "color 0.2s ease",
+                        }}
+                      >
+                        {link.label}
+                      </span>
+                    </div>
+
+                    {isActive && (
+                      <span
+                        style={{
+                          width: "6px",
+                          height: "6px",
+                          borderRadius: "50%",
+                          backgroundColor: "var(--stock-accent-red)",
+                          boxShadow: "0 0 10px var(--stock-accent-red)",
+                        }}
+                      />
+                    )}
                   </Link>
                 </li>
               );
@@ -314,55 +391,117 @@ export function Header() {
           </ul>
         </nav>
 
-        {/* Mobile Drawer Bottom Actions */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "24px" }}>
-          <Link
-            href="tel:+8801700000000"
-            onClick={() => setMobileMenuOpen(false)}
+        {/* Minimalist Bottom Actions & Direct Hotline */}
+        <div
+          style={{
+            marginTop: "auto",
+            paddingTop: "24px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "14px",
+          }}
+        >
+          {/* Hotline & Quick Connect Bar */}
+          <div
             style={{
+              padding: "14px 16px",
+              borderRadius: "14px",
+              backgroundColor: "var(--stock-card-bg)",
+              border: "1px solid var(--stock-card-border)",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              gap: "10px",
-              padding: "16px",
-              borderRadius: "12px",
-              background: "linear-gradient(135deg, #bc001f 0%, #e6192e 100%)",
-              color: "#ffffff",
-              fontFamily: "var(--font-body, 'Inter', sans-serif)",
-              fontSize: "16px",
-              fontWeight: 700,
-              textDecoration: "none",
-              boxShadow: "0 8px 24px rgba(188, 0, 31, 0.4)",
+              justifyContent: "space-between",
+              gap: "12px",
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.15)",
             }}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>call</span>
-            <span>Call Us: +880 1700-000000</span>
-          </Link>
+            <div>
+              <div
+                style={{
+                  fontSize: "10.5px",
+                  fontWeight: 700,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "var(--stock-label-color)",
+                  marginBottom: "2px",
+                }}
+              >
+                Hotline & WhatsApp
+              </div>
+              <div
+                style={{
+                  fontSize: "15px",
+                  fontWeight: 700,
+                  color: "var(--stock-text-primary)",
+                  letterSpacing: "0.01em",
+                }}
+              >
+                +880 1992-424492
+              </div>
+            </div>
 
-          <Link
-            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801700000000"}?text=Hello,%20I%20have%20an%20inquiry%20about%20importing%20a%20vehicle.`}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setMobileMenuOpen(false)}
+            <div style={{ display: "flex", gap: "8px" }}>
+              <Link
+                href="tel:+8801992424492"
+                onClick={() => setMobileMenuOpen(false)}
+                title="Call hotline"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "10px",
+                  backgroundColor: "rgba(230, 25, 46, 0.1)",
+                  border: "1px solid rgba(230, 25, 46, 0.25)",
+                  color: "var(--stock-accent-red)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textDecoration: "none",
+                  transition: "transform 0.15s ease",
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: "19px" }}>call</span>
+              </Link>
+
+              <Link
+                href="https://wa.me/8801992424492?text=Hello,%20I%20have%20an%20inquiry%20about%20importing%20a%20vehicle."
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                title="WhatsApp message"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "10px",
+                  backgroundColor: "rgba(37, 211, 102, 0.1)",
+                  border: "1px solid rgba(37, 211, 102, 0.25)",
+                  color: "#25D366",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textDecoration: "none",
+                  transition: "transform 0.15s ease",
+                }}
+              >
+                <span className="material-symbols-outlined filled" style={{ fontSize: "19px" }}>chat</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Minimalist Subtext */}
+          <div
             style={{
               display: "flex",
+              justifyContent: "space-between",
               alignItems: "center",
-              justifyContent: "center",
-              gap: "10px",
-              padding: "14px",
-              borderRadius: "12px",
-              backgroundColor: "rgba(37, 211, 102, 0.15)",
-              border: "1px solid rgba(37, 211, 102, 0.35)",
-              color: "#25D366",
-              fontFamily: "var(--font-body, 'Inter', sans-serif)",
-              fontSize: "15px",
-              fontWeight: 600,
-              textDecoration: "none",
+              fontSize: "11px",
+              color: "var(--stock-label-color)",
+              padding: "0 2px",
+              opacity: 0.7,
             }}
           >
-            <span className="material-symbols-outlined filled" style={{ fontSize: "20px" }}>chat</span>
-            <span>WhatsApp Quick Chat</span>
-          </Link>
+            <span>Good Car Imports</span>
+            <span>Direct Japanese Auctions</span>
+          </div>
         </div>
       </div>
 

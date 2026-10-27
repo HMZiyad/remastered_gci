@@ -50,157 +50,62 @@ export function InteractiveGallery({ photos, title, children }: InteractiveGalle
   const photo3 = photos.length > 2 ? photos[2] : mainPhoto;
 
   return (
-    <div>
+    <div style={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
       {/* ===== TOP 3-PHOTO SPLIT GRID ===== */}
       <div
-        className="vehicle-main-gallery-grid"
-        style={{
-          display: "grid",
-          gridTemplateColumns: photos.length > 1 ? "1.45fr 1fr" : "1fr",
-          gap: "12px",
-          height: "460px",
-          maxHeight: "460px",
-          overflow: "hidden",
-          marginBottom: "32px",
-          boxSizing: "border-box",
-        }}
+        className={`vehicle-main-gallery-grid ${photos.length > 1 ? "has-multi-photos" : "has-single-photo"}`}
       >
         {/* Left: Large Main Image */}
         <div
+          className="vehicle-gallery-main-img-wrap"
           onClick={() => openLightbox(previewIndex)}
-          style={{
-            position: "relative",
-            height: "460px",
-            maxHeight: "460px",
-            width: "100%",
-            cursor: "pointer",
-            borderRadius: "12px",
-            overflow: "hidden",
-            backgroundColor: "var(--stock-badge-bg)",
-            border: "1px solid var(--stock-card-border)",
-            boxSizing: "border-box",
-          }}
         >
           <img
             src={mainPhoto}
             alt={title}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center",
-              display: "block",
-              transition: "transform 0.3s ease",
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
-            onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            className="vehicle-gallery-main-img"
           />
           {photos.length > 0 && (
-            <div
-              style={{
-                position: "absolute",
-                bottom: "16px",
-                right: "16px",
-                backgroundColor: "rgba(0, 0, 0, 0.75)",
-                color: "#ffffff",
-                padding: "6px 14px",
-                borderRadius: "999px",
-                fontSize: "12.5px",
-                fontWeight: 700,
-                backdropFilter: "blur(6px)",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-                userSelect: "none",
-                zIndex: 2,
-              }}
-            >
+            <div className="vehicle-gallery-counter-badge">
               <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>
                 photo_camera
               </span>
-              <span>1/{photos.length} Photos</span>
+              <span>{previewIndex + 1}/{photos.length} Photos</span>
             </div>
           )}
         </div>
 
-        {/* Right: 2 Stacked Photos (Auction Sheet & Rear View) */}
+        {/* Right: 2 Stacked Photos (Auction Sheet & Rear View) - hidden on mobile via CSS */}
         {photos.length > 1 && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateRows: "224px 224px",
-              gap: "12px",
-              height: "460px",
-              maxHeight: "460px",
-              overflow: "hidden",
-              boxSizing: "border-box",
-            }}
-          >
+          <div className="vehicle-gallery-stacked-col">
             {/* Top Right: Photo 2 */}
             <div
-              onClick={() => openLightbox(1)}
-              style={{
-                height: "224px",
-                maxHeight: "224px",
-                width: "100%",
-                cursor: "pointer",
-                borderRadius: "12px",
-                overflow: "hidden",
-                backgroundColor: "var(--stock-badge-bg)",
-                border: "1px solid var(--stock-card-border)",
-                position: "relative",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxSizing: "border-box",
+              className="vehicle-gallery-sub-img-wrap"
+              onClick={() => {
+                setPreviewIndex(1);
+                openLightbox(1);
               }}
             >
               <img
                 src={photo2}
                 alt={`${title} - Photo 2`}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: "center",
-                  display: "block",
-                  transition: "transform 0.3s ease",
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
-                onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                className="vehicle-gallery-sub-img"
               />
             </div>
 
             {/* Bottom Right: Photo 3 */}
             <div
-              onClick={() => openLightbox(2)}
-              style={{
-                height: "224px",
-                maxHeight: "224px",
-                width: "100%",
-                cursor: "pointer",
-                borderRadius: "12px",
-                overflow: "hidden",
-                backgroundColor: "var(--stock-badge-bg)",
-                border: "1px solid var(--stock-card-border)",
-                position: "relative",
-                boxSizing: "border-box",
+              className="vehicle-gallery-sub-img-wrap"
+              onClick={() => {
+                const targetIdx = photos.length > 2 ? 2 : 1;
+                setPreviewIndex(targetIdx);
+                openLightbox(targetIdx);
               }}
             >
               <img
                 src={photo3}
                 alt={`${title} - Photo 3`}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: "center",
-                  display: "block",
-                  transition: "transform 0.3s ease",
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
-                onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                className="vehicle-gallery-sub-img"
               />
             </div>
           </div>
@@ -212,7 +117,7 @@ export function InteractiveGallery({ photos, title, children }: InteractiveGalle
 
       {/* ===== ALL PHOTOS HORIZONTAL ROW WITH SCROLLBAR ===== */}
       {photos.length > 0 && (
-        <div style={{ marginTop: "36px" }}>
+        <div style={{ marginTop: "36px", width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
           <h3
             style={{
               fontSize: "18px",
@@ -222,7 +127,7 @@ export function InteractiveGallery({ photos, title, children }: InteractiveGalle
               letterSpacing: "-0.01em",
             }}
           >
-            All Photos
+            All Photos {photos.length > 1 ? `(${photos.length})` : ""}
           </h3>
 
           <div
@@ -232,14 +137,20 @@ export function InteractiveGallery({ photos, title, children }: InteractiveGalle
               display: "flex",
               gap: "10px",
               overflowX: "auto",
-              paddingBottom: "4px",
+              width: "100%",
+              maxWidth: "100%",
+              minWidth: 0,
+              paddingBottom: "8px",
+              WebkitOverflowScrolling: "touch",
               scrollbarWidth: "none",
               msOverflowStyle: "none",
+              boxSizing: "border-box",
             }}
           >
             {photos.map((photo, index) => (
-              <div
+              <button
                 key={index}
+                type="button"
                 onClick={() => {
                   setPreviewIndex(index);
                   openLightbox(index);
@@ -255,6 +166,10 @@ export function InteractiveGallery({ photos, title, children }: InteractiveGalle
                   border: previewIndex === index ? "2px solid var(--stock-accent-red)" : "1px solid var(--stock-card-border)",
                   backgroundColor: "var(--stock-card-bg)",
                   transition: "all 0.15s ease",
+                  padding: 0,
+                  background: "transparent",
+                  outline: "none",
+                  display: "block",
                 }}
               >
                 <img
@@ -264,37 +179,41 @@ export function InteractiveGallery({ photos, title, children }: InteractiveGalle
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
+                    display: "block",
                   }}
                 />
-              </div>
+              </button>
             ))}
           </div>
 
           {/* Custom Scroll Indicator Track */}
-          <div
-            style={{
-              width: "100%",
-              height: "4px",
-              backgroundColor: "var(--stock-badge-border)",
-              borderRadius: "2px",
-              position: "relative",
-              overflow: "hidden",
-              marginTop: "12px",
-            }}
-          >
+          {photos.length > 3 && (
             <div
               style={{
-                position: "absolute",
-                top: 0,
-                bottom: 0,
-                left: `${thumbState.leftPercent}%`,
-                width: `${thumbState.widthPercent}%`,
-                backgroundColor: "var(--stock-text-primary)",
+                width: "100%",
+                maxWidth: "100%",
+                height: "4px",
+                backgroundColor: "var(--stock-badge-border)",
                 borderRadius: "2px",
-                transition: "left 0.05s linear",
+                position: "relative",
+                overflow: "hidden",
+                marginTop: "12px",
               }}
-            />
-          </div>
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  bottom: 0,
+                  left: `${thumbState.leftPercent}%`,
+                  width: `${thumbState.widthPercent}%`,
+                  backgroundColor: "var(--stock-accent-red)",
+                  borderRadius: "2px",
+                  transition: "left 0.05s linear",
+                }}
+              />
+            </div>
+          )}
         </div>
       )}
 

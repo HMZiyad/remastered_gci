@@ -131,7 +131,7 @@ export default async function VehiclePage({
       ? "Delivered"
       : String(vehicle.status).replace("_", " ").toUpperCase();
 
-  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801718700120";
+  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801992424492";
 
   return (
     <div
@@ -143,11 +143,12 @@ export default async function VehiclePage({
       }}
     >
       <div
-        className="container"
+        className="container vehicle-detail-container"
         style={{
           maxWidth: "100%",
           width: "100%",
-          padding: "0 var(--margin-desktop, clamp(40px, 3.2vw, 60px))",
+          padding: "0 var(--margin-desktop, clamp(16px, 3.2vw, 60px))",
+          boxSizing: "border-box",
         }}
       >
         {/* ================= 1. BREADCRUMB ================= */}
@@ -281,6 +282,7 @@ export default async function VehiclePage({
 
         {/* ================= 3. 5 KEY FEATURE METRIC BOXES ================= */}
         <div
+          className="vehicle-feature-metric-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
@@ -464,7 +466,7 @@ export default async function VehiclePage({
           className="vehicle-detail-main-layout"
         >
           {/* ================= LEFT COLUMN ================= */}
-          <div>
+          <div className="vehicle-detail-left-col" style={{ minWidth: 0, maxWidth: "100%", width: "100%" }}>
             <InteractiveGallery photos={photoUrls} title={pageTitle}>
               {/* Vehicle Overview Section with Red Vertical Bar */}
               <div
@@ -635,7 +637,7 @@ export default async function VehiclePage({
           </div>
 
           {/* ================= RIGHT COLUMN (SIDEBAR) ================= */}
-          <aside style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          <aside className="vehicle-detail-right-col" style={{ display: "flex", flexDirection: "column", gap: "24px", minWidth: 0, maxWidth: "100%", width: "100%" }}>
             {/* 1. Booking & Inquiry Card */}
             <div
               style={{
@@ -962,7 +964,7 @@ export default async function VehiclePage({
           position: "fixed",
           bottom: "24px",
           right: "24px",
-          zIndex: 9999,
+          zIndex: 850,
           display: "flex",
           alignItems: "center",
           gap: "8px",

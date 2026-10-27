@@ -1,0 +1,626 @@
+/* ============================================================
+   INVENTORY & STOCK PAGE STYLES
+   Responsive 2-column mobile layout, floating filter modal,
+   and prestige card system.
+   ============================================================ */
+
+.stock-page-wrapper {
+  padding: 32px 0 80px 0;
+  background-color: var(--stock-bg);
+  min-height: 100vh;
+  color: var(--stock-text-primary);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.stock-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--margin-desktop, clamp(24px, 3.2vw, 60px));
+  box-sizing: border-box;
+}
+
+.inventory-main-layout {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+/* ============================================================
+   DESKTOP SIDEBAR
+   ============================================================ */
+.inventory-desktop-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background-color: var(--stock-card-bg);
+  border: 1px solid var(--stock-card-border);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: var(--stock-card-shadow);
+  position: sticky;
+  top: 96px;
+  box-sizing: border-box;
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* ============================================================
+   CONTENT AREA & HEADER
+   ============================================================ */
+.inventory-content-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.inventory-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.inventory-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--stock-text-primary);
+  letter-spacing: -0.02em;
+  margin: 0 0 4px 0;
+}
+
+.inventory-subtitle {
+  font-size: 13px;
+  color: var(--stock-label-color);
+  margin: 0;
+}
+
+.inventory-desktop-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ============================================================
+   MOBILE FILTER & SORT TOOLBAR
+   ============================================================ */
+.inventory-mobile-toolbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.mobile-filter-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  background-color: var(--stock-card-bg);
+  border: 1px solid var(--stock-card-border);
+  border-radius: 8px;
+  color: var(--stock-text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--stock-card-shadow);
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.mobile-filter-trigger-btn:hover {
+  border-color: var(--stock-accent-red);
+}
+
+.mobile-filter-trigger-btn:active {
+  transform: scale(0.98);
+}
+
+.mobile-filter-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--stock-accent-red);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  padding: 0 5px;
+  line-height: 1;
+}
+
+.mobile-sort-select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-sort-select {
+  padding: 8px 30px 8px 12px;
+  background-color: var(--stock-input-bg);
+  border: 1px solid var(--stock-input-border);
+  border-radius: 8px;
+  color: var(--stock-input-color);
+  font-size: 12.5px;
+  font-weight: 500;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+.mobile-sort-arrow {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--stock-label-color);
+  font-size: 18px;
+  pointer-events: none;
+}
+
+/* ============================================================
+   ACTIVE FILTERS CHIPS
+   ============================================================ */
+.inventory-active-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding-bottom: 4px;
+}
+
+.active-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background-color: var(--stock-badge-bg);
+  border: 1px solid var(--stock-badge-border);
+  color: var(--stock-text-primary);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.active-filter-chip:hover {
+  border-color: var(--stock-accent-red);
+  color: var(--stock-accent-red);
+}
+
+.active-filter-clear-all {
+  background: none;
+  border: none;
+  color: var(--stock-accent-red);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ============================================================
+   VEHICLE CARDS GRID
+   ============================================================ */
+.inventory-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.stock-card {
+  background-color: var(--stock-card-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--stock-card-border);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.25s ease;
+  box-shadow: var(--stock-card-shadow);
+  position: relative;
+}
+
+.stock-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.stock-card-img-wrap {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background-color: var(--stock-badge-bg);
+  overflow: hidden;
+}
+
+.stock-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.stock-card:hover .stock-card-img {
+  transform: scale(1.04);
+}
+
+.stock-card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stock-badge-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-color: var(--stock-accent-red);
+  color: #ffffff;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.stock-badge-grade {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: var(--stock-badge-bg);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--stock-text-primary);
+  padding: 2.5px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid var(--stock-badge-border);
+  z-index: 2;
+}
+
+.stock-card-content {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.stock-card-sub {
+  font-size: 11.5px;
+  color: var(--stock-label-color);
+  font-weight: 500;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stock-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--stock-text-primary);
+  margin: 0 0 6px 0;
+  text-transform: uppercase;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 36px;
+}
+
+.stock-card-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.stock-card-title a:hover {
+  color: var(--stock-accent-red);
+}
+
+.stock-card-price {
+  color: var(--stock-accent-red);
+  font-weight: 800;
+  font-size: 15px;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.stock-card-specs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--stock-table-row-border);
+  font-size: 11px;
+  color: var(--stock-label-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================
+   FLOATING FILTER MODAL (MOBILE)
+   ============================================================ */
+.filter-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 9998;
+  animation: filterFadeIn 0.2s ease-out;
+}
+
+.filter-modal-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 88vh;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  background-color: var(--stock-card-bg);
+  border: 1px solid var(--stock-card-border);
+  border-bottom: none;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+  animation: filterSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.filter-modal-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: var(--stock-card-border);
+  margin: 10px auto 4px auto;
+  flex-shrink: 0;
+}
+
+.filter-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px 14px 20px;
+  border-bottom: 1px solid var(--stock-table-row-border);
+  flex-shrink: 0;
+}
+
+.filter-modal-body {
+  padding: 18px 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+}
+
+.filter-modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--stock-table-row-border);
+  background-color: var(--stock-card-bg);
+  flex-shrink: 0;
+}
+
+.filter-btn-clear {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--stock-card-border);
+  background-color: var(--stock-badge-bg);
+  color: var(--stock-text-primary);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filter-btn-apply {
+  flex: 2;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--stock-accent-red);
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(235, 47, 69, 0.35);
+  transition: all 0.15s ease;
+}
+
+.filter-btn-apply:hover {
+  opacity: 0.95;
+  box-shadow: 0 6px 18px rgba(235, 47, 69, 0.45);
+}
+
+/* Floating Bottom Filter Pill on Mobile */
+.mobile-floating-filter-wrap {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 850;
+}
+
+.mobile-floating-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  background-color: var(--stock-text-primary);
+  color: var(--stock-bg);
+  border: 1px solid var(--stock-card-border);
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mobile-floating-filter-btn:active {
+  transform: scale(0.96);
+}
+
+@keyframes filterFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes filterSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+/* Tablet & Mobile Breakpoint (< 992px) */
+@media (max-width: 991px) {
+  .stock-page-wrapper {
+    padding: 18px 0 60px 0;
+  }
+
+  .stock-container {
+    padding: 0 16px;
+  }
+
+  /* Hide Desktop Sidebar Completely */
+  .inventory-desktop-sidebar {
+    display: none !important;
+  }
+
+  /* Main layout becomes a single block column */
+  .inventory-main-layout {
+    display: block !important;
+  }
+
+  /* Show Mobile Filter & Sort Toolbar */
+  .inventory-mobile-toolbar {
+    display: flex !important;
+  }
+
+  /* Hide Desktop Table View & Switchers */
+  .inventory-desktop-controls {
+    display: none !important;
+  }
+
+  .stock-table-scroll-container {
+    display: none !important;
+  }
+
+  /* Show floating filter button on mobile */
+  .mobile-floating-filter-wrap {
+    display: block !important;
+  }
+
+  .inventory-top-header {
+    margin-bottom: 12px;
+  }
+
+  .inventory-title {
+    font-size: 21px;
+  }
+
+  .inventory-subtitle {
+    font-size: 12px;
+  }
+
+  /* KEEP 2 COLUMNS OF VEHICLES SIDE-BY-SIDE */
+  .inventory-grid-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .stock-card {
+    border-radius: 10px;
+  }
+
+  .stock-card-content {
+    padding: 10px !important;
+  }
+
+  .stock-card-sub {
+    font-size: 10.5px !important;
+  }
+
+  .stock-card-title {
+    font-size: 12.5px !important;
+    min-height: 32px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .stock-card-price {
+    font-size: 13.5px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .stock-card-specs {
+    font-size: 10px !important;
+    padding-top: 8px !important;
+    gap: 4px !important;
+  }
+
+  .stock-badge-tag,
+  .stock-badge-grade {
+    font-size: 9px !important;
+    padding: 2px 5px !important;
+    top: 6px !important;
+  }
+
+  .stock-badge-tag {
+    left: 6px !important;
+  }
+
+  .stock-badge-grade {
+    right: 6px !important;
+  }
+}
+
+/* Extra small mobile (< 400px) */
+@media (max-width: 399px) {
+  .stock-container {
+    padding: 0 10px !important;
+  }
+
+  .inventory-grid-container {
+    gap: 8px !important;
+  }
+
+  .stock-card-content {
+    padding: 8px !important;
+  }
+
+  .stock-card-title {
+    font-size: 11.5px !important;
+    min-height: 28px !important;
+  }
+
+  .stock-card-price {
+    font-size: 12.5px !important;
+  }
+
+  .stock-card-specs {
+    font-size: 9px !important;
+  }
+}
