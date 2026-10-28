@@ -1266,7 +1266,7 @@ export function CarScrollHero({
             justifyContent: "center",
             touchAction: "pan-y",
             backgroundColor,
-            boxShadow: "0 -40px 100px rgba(0, 0, 0, 0.95)",
+            boxShadow: "0 -40px 100px rgba(0, 0, 0, 0.95), 0 40px 100px rgba(0, 0, 0, 0.95)",
             zIndex: 10,
           }}
         >
@@ -1310,6 +1310,21 @@ export function CarScrollHero({
                 "linear-gradient(to bottom, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.6) 30%, rgba(0, 0, 0, 0.2) 65%, transparent 100%)",
               pointerEvents: "none",
               zIndex: 5,
+            }}
+          />
+
+          {/* Bottom Gradient Fade on Act 3: Seamless connection to Featured Inventory */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: "45vh",
+              background:
+                "linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 30%, rgba(0, 0, 0, 0.6) 65%, rgba(0, 0, 0, 0.94) 100%)",
+              pointerEvents: "none",
+              zIndex: 6,
             }}
           />
 

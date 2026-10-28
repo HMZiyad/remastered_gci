@@ -1,4 +1,4 @@
-export function formatBDT(paisa: number | bigint | null | undefined, short = false) {
+export function formatBDT(paisa: number | bigint | string | null | undefined, short = false) {
   if (paisa == null) return "";
   const bdt = Number(paisa) / 100;
   if (short) {
