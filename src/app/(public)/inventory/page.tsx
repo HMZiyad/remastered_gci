@@ -18,6 +18,8 @@ const BODY_TYPE_MAP: Record<string, BodyType> = {
   MICROBUS: BodyType.Microbus,
   "HIACE-VAN": BodyType.HIACE_Van,
   HIACE_VAN: BodyType.HIACE_Van,
+  "HIACE VAN": BodyType.HIACE_Van,
+  HIACE: BodyType.HIACE_Van,
 };
 
 export default async function InventoryPage({

@@ -49,13 +49,6 @@ export interface CarScrollHeroProps {
 
 const CAR_BRANDS: CarBrandItem[] = [
   {
-    name: "Toyota",
-    logo: "/car_brand_logo/toyota-logo.png",
-    country: "Japan",
-    tagline: "Hybrid Benchmark & Resale King",
-    popularModels: "Prado • Land Cruiser • Harrier • Premio",
-  },
-  {
     name: "Lexus",
     logo: "/car_brand_logo/lexus-logo.png",
     country: "Japan",
@@ -63,11 +56,18 @@ const CAR_BRANDS: CarBrandItem[] = [
     popularModels: "LX600 • RX500h • NX350h • ES300h",
   },
   {
-    name: "BMW",
-    logo: "/car_brand_logo/bmw-logo.png",
-    country: "Germany",
-    tagline: "The Ultimate Driving Machine",
-    popularModels: "5-Series • X5 • 3-Series • X7",
+    name: "Toyota",
+    logo: "/car_brand_logo/toyota-logo.png",
+    country: "Japan",
+    tagline: "Hybrid Benchmark & Resale King",
+    popularModels: "Prado • Land Cruiser • Harrier • Premio",
+  },
+  {
+    name: "Nissan",
+    logo: "/car_brand_logo/nissan-logo.svg",
+    country: "Japan",
+    tagline: "Innovation that Excites & e-POWER",
+    popularModels: "X-Trail • Patrol • Serena • Ariya",
   },
   {
     name: "Honda",
@@ -77,20 +77,6 @@ const CAR_BRANDS: CarBrandItem[] = [
     popularModels: "Civic • Vezel e:HEV • CR-V • Accord",
   },
   {
-    name: "Hyundai",
-    logo: "/car_brand_logo/hyundai-logo.png",
-    country: "South Korea",
-    tagline: "Futuristic Design & EV Platforms",
-    popularModels: "Tucson • Santa Fe • Ioniq 5 • Palisade",
-  },
-  {
-    name: "Jaguar",
-    logo: "/car_brand_logo/jaguar-logo.png",
-    country: "UK",
-    tagline: "Grace, Pace & British Distinction",
-    popularModels: "F-Pace • XF • E-Pace • I-Pace",
-  },
-  {
     name: "Mitsubishi",
     logo: "/car_brand_logo/mitsubishi-logo.png",
     country: "Japan",
@@ -98,25 +84,46 @@ const CAR_BRANDS: CarBrandItem[] = [
     popularModels: "Pajero • Outlander PHEV • Eclipse Cross",
   },
   {
-    name: "Renault",
-    logo: "/car_brand_logo/renault-logo.png",
-    country: "France",
-    tagline: "Continental Comfort & Efficiency",
-    popularModels: "Koleos • Megane • Arkana",
+    name: "Mazda",
+    logo: "/car_brand_logo/mazda-logo.svg",
+    country: "Japan",
+    tagline: "KODO Design & Skyactiv Dynamics",
+    popularModels: "CX-5 • CX-60 • CX-90 • Mazda3",
   },
   {
-    name: "Tesla",
-    logo: "/car_brand_logo/tesla-logo.png",
-    country: "USA",
-    tagline: "Autonomous EV Intelligence",
-    popularModels: "Model 3 • Model Y • Model X • Model S",
+    name: "Subaru",
+    logo: "/car_brand_logo/subaru-logo.svg",
+    country: "Japan",
+    tagline: "Symmetrical AWD & Boxer Precision",
+    popularModels: "Forester • Outback • Crosstrek • WRX",
   },
   {
-    name: "Fiat",
-    logo: "/car_brand_logo/fiat-logo.png",
-    country: "Italy",
-    tagline: "Iconic Urban European Character",
-    popularModels: "Fiat 500 • 500X • Tipo",
+    name: "Daihatsu",
+    logo: "/car_brand_logo/daihatsu-logo.svg",
+    country: "Japan",
+    tagline: "Compact Agility & Smart Efficiency",
+    popularModels: "Tanto • Rocky • Taft • Hijet",
+  },
+  {
+    name: "Suzuki",
+    logo: "/car_brand_logo/suzuki-logo.svg",
+    country: "Japan",
+    tagline: "Lightweight Durability & 4WD Spirit",
+    popularModels: "Jimny • Swift • Vitara • Hustler",
+  },
+  {
+    name: "Isuzu",
+    logo: "/car_brand_logo/isuzu-logo.svg",
+    country: "Japan",
+    tagline: "Heavy-Duty Diesel Reliability",
+    popularModels: "D-Max • MU-X • Forward • Elf",
+  },
+  {
+    name: "Hino",
+    logo: "/car_brand_logo/hino-logo.png",
+    country: "Japan",
+    tagline: "Commercial Grade Japanese Transport",
+    popularModels: "300 Series • 500 Series • Dutro • Ranger",
   },
 ];
 
@@ -1060,9 +1067,11 @@ export function CarScrollHero({
               }}
             >
               {CAR_BRANDS.map((b) => (
-                <div
+                <Link
                   key={b.name}
+                  href={`/inventory?brand=${encodeURIComponent(b.name)}`}
                   className="brand-logo-card"
+                  title={`Browse ${b.name} Inventory`}
                   style={{
                     flexShrink: 0,
                     width: "clamp(150px, 13vw, 190px)",
@@ -1078,6 +1087,7 @@ export function CarScrollHero({
                     justifyContent: "center",
                     transition: "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease",
                     cursor: "pointer",
+                    textDecoration: "none",
                   }}
                 >
                   <img
@@ -1092,7 +1102,7 @@ export function CarScrollHero({
                     }}
                     loading="lazy"
                   />
-                </div>
+                </Link>
               ))}
             </div>
           </div>

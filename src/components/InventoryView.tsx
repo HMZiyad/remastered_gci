@@ -38,16 +38,19 @@ interface InventoryViewProps {
   currentSort: string;
 }
 
-const AUCTION_GRADES = ["8.0", "S", "5.0", "4.5", "4.0", "3.5", "R"];
+const AUCTION_GRADES = ["S", "6.0", "5.0", "4.5", "4.0", "3.5", "R"];
 
 const BODY_TYPES_LIST = [
   { id: "SUV", label: "SUV" },
-  { id: "SEDAN", label: "SEDAN" },
-  { id: "HATCHBACK", label: "HATCHBACK" },
+  { id: "Sedan", label: "Sedan" },
+  { id: "Hatchback", label: "Hatchback" },
   { id: "MPV", label: "MPV" },
-  { id: "CROSSOVER", label: "CROSSOVER" },
-  { id: "MICROBUS", label: "MICROBUS" },
-  { id: "HIACE-VAN", label: "HIACE-VAN" },
+  { id: "Crossover", label: "Crossover" },
+  { id: "Wagon", label: "Wagon" },
+  { id: "Coupe", label: "Coupe" },
+  { id: "Pickup", label: "Pickup" },
+  { id: "Microbus", label: "Microbus" },
+  { id: "HIACE-Van", label: "HIACE-Van" },
 ];
 
 export function InventoryView({
@@ -122,9 +125,17 @@ export function InventoryView({
     (minPrice.trim() || maxPrice.trim() ? 1 : 0) +
     selectedGrades.length;
 
+  const isBodyTypeSelected = (typeId: string) => {
+    const norm = (s: string) => s.toUpperCase().replace(/[-_]/g, "");
+    return selectedBodyTypes.some((t) => norm(t) === norm(typeId));
+  };
+
   const toggleBodyType = (typeId: string) => {
+    const norm = (s: string) => s.toUpperCase().replace(/[-_]/g, "");
     setSelectedBodyTypes((prev) =>
-      prev.includes(typeId) ? prev.filter((t) => t !== typeId) : [...prev, typeId]
+      prev.some((t) => norm(t) === norm(typeId))
+        ? prev.filter((t) => norm(t) !== norm(typeId))
+        : [...prev, typeId]
     );
   };
 
@@ -332,7 +343,7 @@ export function InventoryView({
           }}
         >
           {BODY_TYPES_LIST.map((item) => {
-            const checked = selectedBodyTypes.includes(item.id);
+            const checked = isBodyTypeSelected(item.id);
             return (
               <label
                 key={item.id}
@@ -612,7 +623,8 @@ export function InventoryView({
                 type="button"
                 className="active-filter-chip"
                 onClick={() => {
-                  const updated = selectedBodyTypes.filter((t) => t !== type);
+                  const norm = (s: string) => s.toUpperCase().replace(/[-_]/g, "");
+                  const updated = selectedBodyTypes.filter((t) => norm(t) !== norm(type));
                   setSelectedBodyTypes(updated);
                   executeFilterPush({ bodyTypes: updated });
                 }}
@@ -728,7 +740,7 @@ export function InventoryView({
 
               {/* Desktop Controls (Grid/List Switcher + Sort By) */}
               <div className="inventory-desktop-controls">
-                
+
                 {/* View Switch Buttons (Desktop Only) */}
                 <div
                   style={{
@@ -859,13 +871,13 @@ export function InventoryView({
                       }}
                     >
                       <th style={{ padding: "14px 16px", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.05em", color: "var(--stock-table-th-color)", textTransform: "uppercase", whiteSpace: "nowrap" }}>
-                        CAR BRAND
+                        CAR MODEL
                       </th>
                       <th style={{ padding: "14px 14px", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.05em", color: "var(--stock-table-th-color)", textTransform: "uppercase", whiteSpace: "nowrap" }}>
                         PACKAGE
                       </th>
                       <th style={{ padding: "14px 14px", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.05em", color: "var(--stock-table-th-color)", textTransform: "uppercase", textAlign: "center", whiteSpace: "nowrap" }}>
-                        YEAR
+                        YEAR OF MANUFACTURE
                       </th>
                       <th style={{ padding: "14px 14px", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.05em", color: "var(--stock-table-th-color)", textTransform: "uppercase", whiteSpace: "nowrap" }}>
                         COLOR
@@ -880,7 +892,7 @@ export function InventoryView({
                         ENGINE/CC
                       </th>
                       <th style={{ padding: "14px 14px", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.05em", color: "var(--stock-table-th-color)", textTransform: "uppercase", textAlign: "center", whiteSpace: "nowrap" }}>
-                        TRANS.
+                        TRANSMISSION
                       </th>
                       <th style={{ padding: "14px 20px 14px 14px", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.05em", color: "var(--stock-table-th-color)", textTransform: "uppercase", textAlign: "right", whiteSpace: "nowrap" }}>
                         PRICE

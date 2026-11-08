@@ -284,8 +284,8 @@ export function AddVehicleModal() {
                 <label className="form-label">Auction Grade</label>
                 <select name="auction_grade" className="form-select">
                   <option value="">Select Grade</option>
-                  <option value="6.0">6.0 (Like New)</option>
                   <option value="S">S (Brand New)</option>
+                  <option value="6.0">6.0 (Like New)</option>
                   <option value="5.0">5.0 (Excellent)</option>
                   <option value="4.5">4.5 (Very Good)</option>
                   <option value="4.0">4.0 (Good)</option>

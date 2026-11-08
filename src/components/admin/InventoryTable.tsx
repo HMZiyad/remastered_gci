@@ -95,7 +95,7 @@ export function InventoryTable({ vehicles }: { vehicles: SerializedVehicle[] }) 
         <table className="modern-table" style={{ width: "100%" }}>
           <thead>
             <tr>
-              <th style={{ textAlign: "left", verticalAlign: "middle", paddingLeft: "16px" }}>CAR BRAND</th>
+              <th style={{ textAlign: "left", verticalAlign: "middle", paddingLeft: "16px" }}>CAR MODEL</th>
               <th style={{ textAlign: "center", verticalAlign: "middle" }}>PACKAGE</th>
               <th style={{ textAlign: "center", verticalAlign: "middle" }}>YEAR OF MANUFACTURE</th>
               <th style={{ textAlign: "center", verticalAlign: "middle" }}>COLOR</th>
@@ -103,7 +103,7 @@ export function InventoryTable({ vehicles }: { vehicles: SerializedVehicle[] }) 
               <th style={{ textAlign: "center", verticalAlign: "middle" }}>MILEAGE (KM)</th>
               <th style={{ textAlign: "center", verticalAlign: "middle" }}>ENGINE /CC</th>
               <th style={{ textAlign: "center", verticalAlign: "middle" }}>CHASSIS NO.</th>
-              <th style={{ textAlign: "center", verticalAlign: "middle" }}>TRANS.</th>
+              <th style={{ textAlign: "center", verticalAlign: "middle" }}>TRANSMISSION</th>
               <th style={{ textAlign: "center", verticalAlign: "middle" }}>STATUS</th>
               <th style={{ textAlign: "center", verticalAlign: "middle", paddingRight: "16px" }}>ACTIONS</th>
             </tr>

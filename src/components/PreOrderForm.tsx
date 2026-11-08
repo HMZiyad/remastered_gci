@@ -484,10 +484,14 @@ export function PreOrderForm() {
                   <select name="body_style" value={formData.body_style} onChange={handleChange} style={inputStyle}>
                     <option value="SUV">SUV</option>
                     <option value="Sedan">Sedan</option>
-                    <option value="Crossover">Crossover</option>
-                    <option value="MPV">MPV / Minivan</option>
                     <option value="Hatchback">Hatchback</option>
-                    <option value="HIACE_Van">HIACE Van</option>
+                    <option value="MPV">MPV</option>
+                    <option value="Crossover">Crossover</option>
+                    <option value="Wagon">Wagon</option>
+                    <option value="Coupe">Coupe</option>
+                    <option value="Pickup">Pickup</option>
+                    <option value="Microbus">Microbus</option>
+                    <option value="HIACE-Van">HIACE-Van</option>
                   </select>
                 </div>
               </div>
