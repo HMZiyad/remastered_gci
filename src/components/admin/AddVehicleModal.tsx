@@ -290,6 +290,7 @@ export function AddVehicleModal() {
                   <option value="4.5">4.5 (Very Good)</option>
                   <option value="4.0">4.0 (Good)</option>
                   <option value="3.5">3.5 (Fair)</option>
+                  <option value="3">3 (Average)</option>
                   <option value="R">R (Repaired/Accident)</option>
                 </select>
               </div>
@@ -338,6 +339,7 @@ export function AddVehicleModal() {
                   <option value="port_clearance">Port Clearance</option>
                   <option value="vessel_transit">On Vessel Transit</option>
                   <option value="pre_booked">Pre-Booked</option>
+                  <option value="japan_ready_stock">Japan Ready Stock</option>
                   <option value="reserved">Reserved</option>
                   <option value="sold">Sold</option>
                 </select>

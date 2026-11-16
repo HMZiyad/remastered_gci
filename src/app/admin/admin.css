@@ -1253,6 +1253,8 @@ body {
 .pill-badge.available { background: var(--admin-accent-green-soft); color: var(--admin-accent-green); }
 .pill-badge.port { background: var(--admin-accent-amber-soft); color: var(--admin-accent-amber); }
 .pill-badge.transit { background: var(--admin-accent-blue-soft); color: var(--admin-accent-blue); }
+.pill-badge.prebook { background: #fef3c7; color: #b45309; }
+.pill-badge.japan-stock { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
 .pill-badge.sold { background: #f1f5f9; color: var(--admin-text-muted); }
 .pill-badge.reserved { background: var(--admin-accent-purple-soft); color: var(--admin-accent-purple); }
 .pill-badge.new { background: var(--admin-accent-red-soft); color: var(--admin-accent-red); }

@@ -303,6 +303,8 @@ export default async function AdminReportPage() {
               available: "s-available",
               port_clearance: "s-port",
               vessel_transit: "s-transit",
+              pre_booked: "s-reserved",
+              japan_ready_stock: "s-port",
               reserved: "s-reserved",
               sold: "s-sold",
             };
@@ -310,6 +312,8 @@ export default async function AdminReportPage() {
               available: "Available",
               port_clearance: "Port",
               vessel_transit: "Transit",
+              pre_booked: "Pre-Booked",
+              japan_ready_stock: "Japan Ready Stock",
               reserved: "Reserved",
               sold: "Sold",
             };

@@ -24,6 +24,7 @@ export interface SerializedVehicle {
   slug: string | null;
   badge_text: string | null;
   fuel_type: string | null;
+  status: string | null;
 }
 
 interface InventoryViewProps {
@@ -31,6 +32,7 @@ interface InventoryViewProps {
   allBrands: string[];
   currentSearch: string;
   currentBrand: string;
+  currentStatuses?: string[];
   currentBodyTypes: string[];
   currentMinPrice: string;
   currentMaxPrice: string;
@@ -38,7 +40,15 @@ interface InventoryViewProps {
   currentSort: string;
 }
 
-const AUCTION_GRADES = ["S", "6.0", "5.0", "4.5", "4.0", "3.5", "R"];
+const AUCTION_GRADES = ["S", "6.0", "5.0", "4.5", "4.0", "3.5", "3", "R"];
+
+const STOCK_STATUS_LIST = [
+  { id: "available", label: "Showroom Ready" },
+  { id: "port_clearance", label: "Port Clearance" },
+  { id: "vessel_transit", label: "On Vessel Transit" },
+  { id: "pre_booked", label: "Pre-Booked" },
+  { id: "japan_ready_stock", label: "Japan Ready Stock" },
+];
 
 const BODY_TYPES_LIST = [
   { id: "SUV", label: "SUV" },
@@ -53,11 +63,72 @@ const BODY_TYPES_LIST = [
   { id: "HIACE-Van", label: "HIACE-Van" },
 ];
 
+function renderTableStatusBadge(status: string | null) {
+  const s = (status || "available").toLowerCase();
+  let bg = "rgba(16, 185, 129, 0.12)";
+  let color = "#10b981";
+  let border = "1px solid rgba(16, 185, 129, 0.3)";
+  let label = "Showroom Ready";
+
+  if (s === "japan_ready_stock") {
+    bg = "rgba(239, 68, 68, 0.15)";
+    color = "#ef4444";
+    border = "1px solid rgba(239, 68, 68, 0.35)";
+    label = "Japan Ready Stock";
+  } else if (s === "pre_booked") {
+    bg = "rgba(245, 158, 11, 0.15)";
+    color = "#f59e0b";
+    border = "1px solid rgba(245, 158, 11, 0.35)";
+    label = "Pre-Booked";
+  } else if (s === "port_clearance") {
+    bg = "rgba(245, 158, 11, 0.15)";
+    color = "#f59e0b";
+    border = "1px solid rgba(245, 158, 11, 0.35)";
+    label = "Port Customs";
+  } else if (s === "vessel_transit") {
+    bg = "rgba(14, 165, 233, 0.15)";
+    color = "#0ea5e9";
+    border = "1px solid rgba(14, 165, 233, 0.35)";
+    label = "On Vessel";
+  } else if (s === "reserved") {
+    bg = "rgba(168, 85, 247, 0.15)";
+    color = "#a855f7";
+    border = "1px solid rgba(168, 85, 247, 0.35)";
+    label = "Reserved";
+  } else if (s === "sold") {
+    bg = "rgba(148, 163, 184, 0.15)";
+    color = "#94a3b8";
+    border = "1px solid rgba(148, 163, 184, 0.35)";
+    label = "Sold";
+  }
+
+  return (
+    <span
+      style={{
+        display: "inline-block",
+        fontSize: "10.5px",
+        fontWeight: 700,
+        padding: "2.5px 7px",
+        borderRadius: "4px",
+        backgroundColor: bg,
+        color: color,
+        border: border,
+        textTransform: "uppercase",
+        letterSpacing: "0.03em",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
 export function InventoryView({
   initialVehicles,
   allBrands,
   currentSearch,
   currentBrand,
+  currentStatuses = [],
   currentBodyTypes,
   currentMinPrice,
   currentMaxPrice,
@@ -72,6 +143,7 @@ export function InventoryView({
   // Local filter states
   const [search, setSearch] = useState(currentSearch);
   const [brand, setBrand] = useState(currentBrand);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>(currentStatuses);
   const [selectedBodyTypes, setSelectedBodyTypes] = useState<string[]>(currentBodyTypes);
   const [minPrice, setMinPrice] = useState(currentMinPrice);
   const [maxPrice, setMaxPrice] = useState(currentMaxPrice);
@@ -86,6 +158,7 @@ export function InventoryView({
   useEffect(() => {
     setSearch(currentSearch);
     setBrand(currentBrand);
+    setSelectedStatuses(currentStatuses);
     setSelectedBodyTypes(currentBodyTypes);
     setMinPrice(currentMinPrice);
     setMaxPrice(currentMaxPrice);
@@ -94,6 +167,7 @@ export function InventoryView({
   }, [
     currentSearch,
     currentBrand,
+    currentStatuses,
     currentBodyTypes,
     currentMinPrice,
     currentMaxPrice,
@@ -121,9 +195,22 @@ export function InventoryView({
   const activeFiltersCount =
     (search.trim() ? 1 : 0) +
     (brand ? 1 : 0) +
+    selectedStatuses.length +
     selectedBodyTypes.length +
     (minPrice.trim() || maxPrice.trim() ? 1 : 0) +
     selectedGrades.length;
+
+  const isStockStatusSelected = (statusId: string) => {
+    return selectedStatuses.some((s) => s.toLowerCase() === statusId.toLowerCase());
+  };
+
+  const toggleStockStatus = (statusId: string) => {
+    setSelectedStatuses((prev) =>
+      prev.some((s) => s.toLowerCase() === statusId.toLowerCase())
+        ? prev.filter((s) => s.toLowerCase() !== statusId.toLowerCase())
+        : [...prev, statusId]
+    );
+  };
 
   const isBodyTypeSelected = (typeId: string) => {
     const norm = (s: string) => s.toUpperCase().replace(/[-_]/g, "");
@@ -148,6 +235,7 @@ export function InventoryView({
   const executeFilterPush = (newParams: {
     search?: string;
     brand?: string;
+    statuses?: string[];
     bodyTypes?: string[];
     minPrice?: string;
     maxPrice?: string;
@@ -158,6 +246,7 @@ export function InventoryView({
 
     const s = newParams.search !== undefined ? newParams.search : search;
     const b = newParams.brand !== undefined ? newParams.brand : brand;
+    const stList = newParams.statuses !== undefined ? newParams.statuses : selectedStatuses;
     const bt = newParams.bodyTypes !== undefined ? newParams.bodyTypes : selectedBodyTypes;
     const minP = newParams.minPrice !== undefined ? newParams.minPrice : minPrice;
     const maxP = newParams.maxPrice !== undefined ? newParams.maxPrice : maxPrice;
@@ -166,6 +255,7 @@ export function InventoryView({
 
     if (s.trim()) params.set("search", s.trim());
     if (b) params.set("brand", b);
+    if (stList.length > 0) params.set("status", stList.join(","));
     if (bt.length > 0) params.set("body_type", bt.join(","));
     if (minP.trim()) params.set("min_price", minP.trim());
     if (maxP.trim()) params.set("max_price", maxP.trim());
@@ -191,6 +281,7 @@ export function InventoryView({
   const handleReset = () => {
     setSearch("");
     setBrand("");
+    setSelectedStatuses([]);
     setSelectedBodyTypes([]);
     setMinPrice("");
     setMaxPrice("");
@@ -317,6 +408,88 @@ export function InventoryView({
           >
             expand_more
           </span>
+        </div>
+      </div>
+
+      {/* SECTION: STOCK STATUS */}
+      <div style={{ marginBottom: "22px" }}>
+        <label
+          style={{
+            display: "block",
+            fontSize: "10.5px",
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            color: "var(--stock-label-color)",
+            textTransform: "uppercase",
+            marginBottom: "12px",
+          }}
+        >
+          Stock Status
+        </label>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "9px",
+          }}
+        >
+          {STOCK_STATUS_LIST.map((item) => {
+            const checked = isStockStatusSelected(item.id);
+            return (
+              <label
+                key={item.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  userSelect: "none",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  toggleStockStatus(item.id);
+                }}
+              >
+                <span
+                  style={{
+                    width: "16px",
+                    height: "16px",
+                    borderRadius: "4px",
+                    backgroundColor: checked ? "var(--stock-accent-red)" : "var(--stock-input-bg)",
+                    border: checked ? "1.5px solid var(--stock-accent-red)" : "1.5px solid var(--stock-input-border)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  {checked && (
+                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                      <path
+                        d="M1 4L3.8 7L9 1"
+                        stroke="#ffffff"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )}
+                </span>
+                <span
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    color: checked ? "var(--stock-text-primary)" : "var(--stock-text-secondary)",
+                    letterSpacing: "0.01em",
+                    transition: "color 0.15s ease",
+                  }}
+                >
+                  {item.label}
+                </span>
+              </label>
+            );
+          })}
         </div>
       </div>
 
@@ -617,6 +790,26 @@ export function InventoryView({
               </button>
             )}
 
+            {selectedStatuses.map((st) => {
+              const matchedItem = STOCK_STATUS_LIST.find((item) => item.id.toLowerCase() === st.toLowerCase());
+              const label = matchedItem ? matchedItem.label : st;
+              return (
+                <button
+                  key={st}
+                  type="button"
+                  className="active-filter-chip"
+                  onClick={() => {
+                    const updated = selectedStatuses.filter((s) => s.toLowerCase() !== st.toLowerCase());
+                    setSelectedStatuses(updated);
+                    executeFilterPush({ statuses: updated });
+                  }}
+                >
+                  <span>{label}</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>close</span>
+                </button>
+              );
+            })}
+
             {selectedBodyTypes.map((type) => (
               <button
                 key={type}
@@ -894,6 +1087,9 @@ export function InventoryView({
                       <th style={{ padding: "14px 14px", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.05em", color: "var(--stock-table-th-color)", textTransform: "uppercase", textAlign: "center", whiteSpace: "nowrap" }}>
                         TRANSMISSION
                       </th>
+                      <th style={{ padding: "14px 14px", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.05em", color: "var(--stock-table-th-color)", textTransform: "uppercase", textAlign: "center", whiteSpace: "nowrap" }}>
+                        STATUS
+                      </th>
                       <th style={{ padding: "14px 20px 14px 14px", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.05em", color: "var(--stock-table-th-color)", textTransform: "uppercase", textAlign: "right", whiteSpace: "nowrap" }}>
                         PRICE
                       </th>
@@ -972,18 +1168,20 @@ export function InventoryView({
                                   </span>
                                 )}
                               </div>
-                              <span
-                                style={{
-                                  fontWeight: 700,
-                                  fontSize: "13px",
-                                  color: "var(--stock-text-primary)",
-                                  letterSpacing: "0.02em",
-                                  textTransform: "uppercase",
-                                  whiteSpace: "nowrap",
-                                }}
-                              >
-                                {v.car_name}
-                              </span>
+                              <div>
+                                <span
+                                  style={{
+                                    fontWeight: 700,
+                                    fontSize: "13px",
+                                    color: "var(--stock-text-primary)",
+                                    letterSpacing: "0.02em",
+                                    textTransform: "uppercase",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                >
+                                  {v.car_name}
+                                </span>
+                              </div>
                             </div>
                           </td>
 
@@ -1034,6 +1232,10 @@ export function InventoryView({
                             {v.transmission || "AT"}
                           </td>
 
+                          <td style={{ padding: "12px 14px", textAlign: "center", whiteSpace: "nowrap" }}>
+                            {renderTableStatusBadge(v.status)}
+                          </td>
+
                           <td style={{ padding: "12px 20px 12px 14px", textAlign: "right", whiteSpace: "nowrap" }}>
                             <span
                               style={{
@@ -1052,7 +1254,7 @@ export function InventoryView({
                     {initialVehicles.length === 0 && (
                       <tr>
                         <td
-                          colSpan={9}
+                          colSpan={10}
                           style={{
                             textAlign: "center",
                             padding: "60px 20px",
@@ -1119,11 +1321,27 @@ export function InventoryView({
                           </div>
                         )}
 
-                        {v.badge_text && (
+                        {v.status === "japan_ready_stock" ? (
+                          <span className="stock-badge-tag" style={{ backgroundColor: "#fee2e2", color: "#dc2626", border: "1px solid #fecaca" }}>
+                            Japan Ready Stock
+                          </span>
+                        ) : v.status === "pre_booked" ? (
+                          <span className="stock-badge-tag" style={{ backgroundColor: "#fef3c7", color: "#b45309", border: "1px solid #fde68a" }}>
+                            Pre-Booked
+                          </span>
+                        ) : v.status === "port_clearance" ? (
+                          <span className="stock-badge-tag" style={{ backgroundColor: "#fef3c7", color: "#b45309" }}>
+                            Port CTG
+                          </span>
+                        ) : v.status === "vessel_transit" ? (
+                          <span className="stock-badge-tag" style={{ backgroundColor: "#e0f2fe", color: "#0369a1" }}>
+                            On Vessel
+                          </span>
+                        ) : v.badge_text ? (
                           <span className="stock-badge-tag">
                             {v.badge_text}
                           </span>
-                        )}
+                        ) : null}
 
                         {v.auction_grade && (
                           <span className="stock-badge-grade">

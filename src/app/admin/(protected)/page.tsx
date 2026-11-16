@@ -68,7 +68,7 @@ export default async function AdminDashboardPage() {
     incomingInwardCount,
     fuelCounts
   ] = await Promise.all([
-    prisma.vehicle.count({ where: { status: { in: ['available', 'port_clearance', 'vessel_transit'] } } }),
+    prisma.vehicle.count({ where: { status: { in: ['available', 'port_clearance', 'vessel_transit', 'japan_ready_stock'] } } }),
     prisma.vehicle.count({ where: { status: 'available' } }),
     prisma.vehicle.count({ where: { status: 'port_clearance' } }),
     prisma.vehicle.count({ where: { status: 'vessel_transit' } }),

@@ -31,6 +31,7 @@ export default async function AdminVehiclesPage({
     showroomUnits,
     portUnits,
     vesselUnits,
+    japanStockUnits,
     soldReservedUnits,
     totalValueAgg
   ] = await Promise.all([
@@ -38,10 +39,11 @@ export default async function AdminVehiclesPage({
     prisma.vehicle.count({ where: { status: "available" } }),
     prisma.vehicle.count({ where: { status: "port_clearance" } }),
     prisma.vehicle.count({ where: { status: "vessel_transit" } }),
+    prisma.vehicle.count({ where: { status: "japan_ready_stock" as any } }),
     prisma.vehicle.count({ where: { status: { in: ["sold", "reserved"] } } }),
     prisma.vehicle.aggregate({
       _sum: { price_bdt: true },
-      where: { status: { in: ["available", "port_clearance", "vessel_transit"] } }
+      where: { status: { in: ["available", "port_clearance", "vessel_transit", "japan_ready_stock"] } }
     })
   ]);
 
@@ -161,6 +163,12 @@ export default async function AdminVehiclesPage({
               className={`filter-pill-item ${statusFilter === 'vessel_transit' ? 'active' : ''}`}
             >
               Vessel Transit <span className="filter-pill-count">{vesselUnits}</span>
+            </Link>
+            <Link
+              href="/admin/inventory?status=japan_ready_stock"
+              className={`filter-pill-item ${statusFilter === 'japan_ready_stock' ? 'active' : ''}`}
+            >
+              Japan Ready Stock <span className="filter-pill-count">{japanStockUnits}</span>
             </Link>
             <Link
               href="/admin/inventory?status=sold_reserved"

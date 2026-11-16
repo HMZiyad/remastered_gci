@@ -118,6 +118,7 @@ enum VehicleStatus {
   port_clearance
   vessel_transit
   pre_booked
+  japan_ready_stock
   sold
   reserved
 }

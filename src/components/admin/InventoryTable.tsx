@@ -79,6 +79,10 @@ export function InventoryTable({ vehicles }: { vehicles: SerializedVehicle[] }) 
         return <span className="pill-badge port">Customs (CTG)</span>;
       case "available":
         return <span className="pill-badge available">Showroom Ready</span>;
+      case "pre_booked":
+        return <span className="pill-badge prebook">Pre-Booked</span>;
+      case "japan_ready_stock":
+        return <span className="pill-badge japan-stock">Japan Ready Stock</span>;
       case "sold":
         return <span className="pill-badge sold">Sold</span>;
       case "reserved":

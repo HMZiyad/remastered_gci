@@ -63,10 +63,22 @@ export default async function InventoryPage({
   }
   const cleanGrades = rawGrades.map((g) => g.trim()).filter(Boolean);
 
+  // Parse stock statuses (supports array or comma-separated string)
+  const rawStatuses: string[] = [];
+  if (Array.isArray(resolvedParams.status)) {
+    rawStatuses.push(...resolvedParams.status);
+  } else if (typeof resolvedParams.status === "string" && resolvedParams.status !== "all") {
+    rawStatuses.push(...resolvedParams.status.split(","));
+  }
+  const cleanStatuses = rawStatuses.map((s) => s.trim().toLowerCase()).filter(Boolean);
+
+  const activeStatuses = ["available", "port_clearance", "vessel_transit", "pre_booked", "japan_ready_stock"];
+  const matchedStatuses = cleanStatuses.filter((s) => activeStatuses.includes(s));
+
   // Build Prisma WHERE clause strictly matching database schema
   const where: any = {
     // Show only active vehicles from live inventory (exclude sold vehicles)
-    status: { in: ["available", "port_clearance", "vessel_transit", "pre_booked"] },
+    status: { in: matchedStatuses.length > 0 ? matchedStatuses : activeStatuses },
   };
 
   // Quick Search: searches car_name, package_trim, chassis_code, color_name, brand
@@ -172,6 +184,7 @@ export default async function InventoryPage({
       slug: v.slug,
       badge_text: v.badge_text,
       fuel_type: v.fuel_type,
+      status: v.status,
     };
   });
 
@@ -181,6 +194,7 @@ export default async function InventoryPage({
       allBrands={allBrands}
       currentSearch={search}
       currentBrand={brand}
+      currentStatuses={cleanStatuses}
       currentBodyTypes={cleanBodyTypes}
       currentMinPrice={minPrice}
       currentMaxPrice={maxPrice}
